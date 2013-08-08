@@ -73,3 +73,7 @@ ex. (link-to-asset \"javascripts/app.js\") => \"/assets/javascripts/app-12345678
 
 (defn precompile [options] ;; lein stefon-precompile uses this name
   (precompile/precompile options))
+
+(defn init [options]
+  (settings/with-options options
+    (precompile/load-precompiled-assets)))

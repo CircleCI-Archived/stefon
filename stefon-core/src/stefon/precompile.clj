@@ -24,6 +24,24 @@
        (map #(.delete %1))
        dorun))
 
+(defn load-precompiled-assets
+  "Load any assets already in the cache directory"
+  []
+  (->> (settings/cache-root)
+       (io/file)
+       file-seq
+       flatten
+       (remove #(.isDirectory %))
+       (map (fn [cached]
+              (let [cached (->> cached
+                                (relative-path (settings/cache-root))
+                                (str "/"))
+                    uncached (->> cached
+                                  (path/uncachify-path))]
+                (cache/add-cached-uri uncached cached))))
+       dorun))
+
+
 (defn precompile [options]
   (settings/with-options options
     (-> (settings/precompile-root) delete-dir)
