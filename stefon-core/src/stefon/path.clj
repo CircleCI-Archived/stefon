@@ -3,6 +3,7 @@
             [clojure.core.incubator :refer (-?>)]
             [clojure.java.io :as io]
             [stefon.settings :as settings]
+            [stefon.util :refer (inspect)]
             [stefon.digest :as digest]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -74,7 +75,8 @@
   (str root "/assets/" adrf))
 
 (defn find-file [filename]
-  (-?> filename io/file (.exists)))
+  (when (-?> filename io/file .exists)
+    (io/file filename)))
 
 (defn find-asset [adrf]
   {:post [(or (nil? %) (-> % io/file .exists))]}
