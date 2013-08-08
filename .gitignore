@@ -1,4 +1,4 @@
-/dieter-core/target/
-/lein-dieter-precompile/target/
-/dieter-core/.lein-repl-history
-/dieter-core/test/precompile-cache/
+/stefon-core/target/
+/lein-stefon-precompile/target/
+/stefon-core/.lein-repl-history
+/stefon-core/test/precompile-cache/
