@@ -1,10 +1,10 @@
-# Dieter
+# Stefon
 
-Dieter [dee-ter] is a clojure interpretation of the ruby Sprockets library.
+Stefon [dee-ter] is a clojure interpretation of the ruby Sprockets library.
 
 ## Usage
 
-Dieter provides you with a ring middleware which will compile certain
+Stefon provides you with a ring middleware which will compile certain
 static assets. Currently it supports concatenating javascript and CSS
 files, compiling
 [LESS CSS](http://lesscss.org/),
@@ -29,7 +29,7 @@ Or if you use noir
 (server/add-middleware asset-pipeline config-options)
 ```
 
-Concatenation of assets is handled by a Dieter manifest file.
+Concatenation of assets is handled by a Stefon manifest file.
 A manifest is a file whose name ends in .stefon and whose contents are
 a clojure vector of file names / directories to concatenate.
 
@@ -44,7 +44,7 @@ For example, a file named assets/javascripts/app.js.stefon with the following co
 ]
 ```
 
-Dieter would look for base.js in the same directory, and then concatenate each file from the lib and models directories.
+Stefon would look for base.js in the same directory, and then concatenate each file from the lib and models directories.
 
 ## Linkage
 
@@ -65,7 +65,7 @@ In order to include links to your assets you may use the link-to-asset function.
     :log-level  :normal                 ; or :quiet
     :precompiles ["./assets/myfile.js.stefon"] ; list of files for `lein stefon-precompile` to precompile. If left blank (the default), all files will be precompiled, and errors will be ignored.
 
-Dieter checks for your assets in [asset-root]/assets.
+Stefon checks for your assets in [asset-root]/assets.
 Compiled assets are always written to the cache-root. In production mode this
 means that the cached assets are served from the cache. However development-mode
 assets are always regenerated.

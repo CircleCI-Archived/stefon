@@ -9,7 +9,7 @@
 ;;; String-types used
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;; Dieter uses many different types of paths, and it can be confusing at times.
+;;; Stefon uses many different types of paths, and it can be confusing at times.
 ;;; We try to use a sort-of hungarian notation, where every path has a type
 ;;; included in its variable name somehow.
 

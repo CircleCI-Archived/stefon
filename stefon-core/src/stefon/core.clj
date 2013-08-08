@@ -52,7 +52,7 @@ ex. (link-to-asset \"javascripts/app.js\") => \"/assets/javascripts/app-12345678
     (-> adrf find-or-build-asset :digested)))
 
 (defn asset-pipeline
-  "Construct the Dieter asset pipeline depending on the :cache-mode option, eventually
+  "Construct the Stefon asset pipeline depending on the :cache-mode option, eventually
    either loading the data from the cache directory, rendering a new resource and
    returning that, or passing on the request to the previously existing request
    handlers in the pipeline."

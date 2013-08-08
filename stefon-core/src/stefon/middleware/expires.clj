@@ -1,5 +1,5 @@
 (ns stefon.middleware.expires
-  "Middleware for overriding expiration headers for cached Dieter resources"
+  "Middleware for overriding expiration headers for cached Stefon resources"
   (:require [ring.util.response :as res]
             [ring.middleware.file :as file]
             [stefon.path :as path])
@@ -14,7 +14,7 @@
 
 (defn wrap-expires-never
   "Middleware that overrides any existing headers for browser-side caching.
-   This is meant to be used with Dieter's cached resources, since it sets
+   This is meant to be used with Stefon's cached resources, since it sets
    the expiration headers to one year in the future (maximum suggested as
    per RFC 2616, Sec. 14.21)."
   [handler & [opts]]
@@ -26,7 +26,7 @@
 
 
 (defn wrap-file-expires-never
-  "Given a root path to the previously cached Dieter resources, check that the request
+  "Given a root path to the previously cached Stefon resources, check that the request
    points to something that is a cacheable URL for a precompiled resource. If so, pass
    the request to the ring file middleware and then set the expiration header, otherwise
    just pass the request along to the handlers down the chain."

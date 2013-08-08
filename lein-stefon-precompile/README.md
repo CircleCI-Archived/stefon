@@ -1,6 +1,6 @@
-# Dieter precompile - a leiningen plugin
+# Stefon precompile - a leiningen plugin
 
-A leiningen plugin for precompiling assets using Dieter, similar to Rails' `rake asset-precompile`.
+A leiningen plugin for precompiling assets using Stefon, similar to Rails' `rake asset-precompile`.
 
 ## Installation
 
