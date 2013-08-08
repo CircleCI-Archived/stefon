@@ -1,8 +1,8 @@
 (ns dieter.precompile
   (:require [clojure.java.io :as io]
-            [dieter.cache :as cache]
             [dieter.path :as path]
             [dieter.asset :as asset]
+            [dieter.digest :as digest]
             [dieter.settings :as settings]))
 
 (defn relative-path [root file]
@@ -11,25 +11,8 @@
         root-length (count absroot)]
     (.substring absfile (inc root-length))))
 
-(defn load-precompiled-assets
-  "Load any assets already in the cache directory"
-  []
-  (->> (settings/cache-root)
-       (io/file)
-       file-seq
-       flatten
-       (remove #(.isDirectory %))
-       (map (fn [cached]
-              (let [cached (->> cached
-                                (relative-path (settings/cache-root))
-                                (str "/"))
-                    uncached (->> cached
-                                  (path/uncachify-path))]
-                (cache/add-cached-uri uncached cached))))
-       dorun))
-
-(defn find-and-cache-asset [& args]
-  (apply (ns-resolve 'dieter.core 'find-and-cache-asset) args))
+(defn build-asset [& args]
+  (apply (ns-resolve 'dieter.core 'build-asset) args))
 
 (defn delete-dir [directory]
   (->> directory
@@ -43,11 +26,15 @@
 
 (defn precompile [options]
   (settings/with-options options
-    (-> (settings/cache-root) (str "assets") delete-dir)
+    (-> (settings/precompile-root) delete-dir)
     (if (settings/precompiles)
+
+      ;; just the listed files
+      ;; TODO add dirs
       (doseq [filename (settings/precompiles)]
-        (->> filename
-             (find-and-cache-asset)))
+        (build-asset filename))
+
+      ;; all files
       (doseq [asset-root (settings/asset-roots)]
         (->>
          (io/file asset-root "assets")
@@ -56,10 +43,10 @@
          (remove #(.isDirectory %))
          (map (fn [filename]
                 (try (->> filename
-                     (relative-path asset-root)
-                     (str "./")
-                     (find-and-cache-asset))
-                (print ".")
-                (catch Exception e
-                  (println "Not built" filename)))))
+                          (relative-path asset-root)
+                          (str "./")
+                          (build-asset))
+                     (print ".")
+                     (catch Exception e
+                       (println "Not built" filename)))))
          dorun)))))

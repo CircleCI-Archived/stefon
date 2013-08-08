@@ -30,13 +30,11 @@
    points to something that is a cacheable URL for a precompiled resource. If so, pass
    the request to the ring file middleware and then set the expiration header, otherwise
    just pass the request along to the handlers down the chain."
-
   [app root-path & [opts]]
   (fn [req]
-    (let [path (:uri req)
-          uncached (path/uncachify-path path)]
-      (if (and (re-matches #"^/assets/.*" path)
-               (not (= path uncached)))
+    (let [path (:uri req)]
+      (if (and (path/asset-uri? path)
+               (not (path/digest-path? path)))
         (if-let [resp ((file/wrap-file app root-path) req)]
           (res/header resp "Expires"
                       (.format (make-http-format) (Date. (+ (System/currentTimeMillis)

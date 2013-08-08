@@ -10,13 +10,9 @@
   (let [compiler (com.google.javascript.jscomp.Compiler.)
         options (CompilerOptions.)]
     (.setOptionsForCompilationLevel (CompilationLevel/SIMPLE_OPTIMIZATIONS) options)
-    (if (= :quiet (settings/log-level))
-      (do
-        (.setOptionsForWarningLevel (WarningLevel/QUIET) options)
-        (.setLevel (Logger/getLogger "com.google.javascript.jscomp") Level/OFF))
-      (do
-        (.setOptionsForWarningLevel (WarningLevel/VERBOSE) options)
-        (.setLevel (Logger/getLogger "com.google.javascript.jscomp") Level/WARNING)))
+    (do
+      (.setOptionsForWarningLevel (WarningLevel/QUIET) options)
+      (.setLevel (Logger/getLogger "com.google.javascript.jscomp") Level/OFF))
     [compiler options]))
 
 (defn compress-js [filename text]

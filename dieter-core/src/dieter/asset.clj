@@ -1,7 +1,8 @@
 (ns dieter.asset
   (:require [clj-time.core :as time]
-            [clj-time.coerce :as time-coerce])
-  (:use [dieter.path :only [file-ext]]))
+            [clj-time.coerce :as time-coerce]
+            [clojure.string :as cstr]
+            [dieter.path :as path]))
 
 (defprotocol Asset
   "Protocol for pre-processing assets"
@@ -51,10 +52,25 @@ Contents can be a String, StringBuilder, or byte[]"))
   "register a new asset constructor for files with the file extension ext"
   (swap! types assoc ext constructor-fn))
 
+(defn file-ext [file]
+  (last (cstr/split (str file) #"\.")))
+
 (defn make-asset [file]
   "returns a newly constructed asset of the proper type as determined by the file extension.
 defaults to Static if extension is not registered."
-  ((get @types 
-        (file-ext file) 
-        (:default @types)) 
+  ((get @types
+        (file-ext file)
+        (:default @types))
    {:file file}))
+
+(defn build [adrf]
+  (let [asset (-> adrf
+                  path/find-asset
+                  (make-asset)
+                  (read-asset)
+                  ;; TODO add back compression
+                  )
+        undigested-uri (path/adrf->uri adrf)
+        digested-uri (path/path->digested undigested-uri (:content asset))]
+    (assoc :digested digested-uri)
+    (assoc :undigested undigested-uri)))

@@ -1,27 +1,9 @@
 (ns dieter.path
-  (:use dieter.settings)
   (:require [clojure.string :as cstr]
+            [clojure.core.incubator :refer (-?>)]
             [clojure.java.io :as io]
-            [dieter.settings :as settings])
-  (:import [java.security MessageDigest]))
-
-;;;; TODO
-;;; so manifests need to call find-file from their own start-dir, not the
-;;; asset-root. So this needs to be flexible to support both. However, it should
-;;; never be splitting things apart, and "./" isn't neceessary (it should be
-;;; handled in the manifest).
-
-(defn file-ext [file]
-  (last (cstr/split (str file) #"\.")))
-
-(defn uncachify-path [path]
-  (if-let [[match fname hash ext] (re-matches #"^(.+)-([\da-f]{32})\.(\w+)$" path)]
-    (str fname "." ext)
-    path))
-
-(defn make-relative-to-cache [path]
-  (cstr/replace-first path (re-pattern (str ".*" (settings/cache-root))) ""))
-
+            [dieter.settings :as settings]
+            [dieter.digest :as digest]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; String-types used
@@ -48,25 +30,51 @@
 ;;; them as absolute strings names, because relative ones are easy to confuse
 ;;; with other types.
 
-(defn is-asset-uri? [uri]
+(defn asset-uri? [uri]
   (re-matches #"^/assets/.*" uri))
 
+(defn split-digested-path [path]
+  "return [match path digest extenstion]"
+  (re-matches #"^(.+)-([\da-f]{32})\.(\w+)$" path))
+
+(defn split-path [path]
+  "returns [match path extenston]"
+  (re-matches #"^(.+)\.(\w+)$" path))
+
+(defn digest-path? [path]
+  (-> path split-digested-path boolean))
+
+(defn path->undigested
+  "Returns the path with the content digest stripped"
+  [path]
+  {:pre [(digest-path? path)]
+   :post [(not (digest-path? path))]}
+  (if-let [[_ fname digest ext] (split-digested-path path)]
+    (str fname "." ext)
+    path))
+
+(defn path->digested
+  "Adds a digest to the path based on the content"
+  [path content]
+  {:pre [(not (digest-path? path))]
+   :post [(digest-path? path)]}
+  (if-let [[_ fname ext] (split-path path)]
+    (str fname "-" (digest/digest content) "." ext)
+    (str path "-" (digest/digest content))))
+
 (defn uri->adrf [uri]
-  {:pre [(is-asset-uri? uri)]} ;; uris start with "/assets"
+  {:pre [(asset-uri? uri)]} ;; uris start with "/assets"
   (.substring uri 8))
 
 (defn adrf->uri [adrf]
-  {:post [(is-asset-uri? %)]} ;; uris start with "/assets"
+  {:post [(asset-uri? %)]} ;; uris start with "/assets"
   (str "/assets/" adrf))
 
 (defn adrf->filename [root adrf]
   (str root "/assets/" adrf))
 
-(defn find-file [filename & {:keys [root]}]
-  {:post [(or (nil? %) (.exists %))]}
-  (let [file (io/file root filename)]
-    (when (.exists file)
-      file)))
+(defn find-file [filename]
+  (-?> filename io/file (.exists)))
 
 (defn find-asset [adrf]
   {:post [(or (nil? %) (-> % io/file .exists))]}
