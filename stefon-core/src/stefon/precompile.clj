@@ -2,6 +2,7 @@
   (:require [clojure.java.io :as io]
             [stefon.path :as path]
             [stefon.asset :as asset]
+            [stefon.cache.memory :as mem]
             [stefon.digest :as digest]
             [stefon.settings :as settings]))
 
@@ -27,18 +28,18 @@
 (defn load-precompiled-assets
   "Load any assets already in the cache directory"
   []
-  (->> (settings/cache-root)
+  (->> (settings/precompile-root)
        (io/file)
        file-seq
        flatten
        (remove #(.isDirectory %))
-       (map (fn [cached]
-              (let [cached (->> cached
-                                (relative-path (settings/cache-root))
-                                (str "/"))
-                    uncached (->> cached
-                                  (path/uncachify-path))]
-                (cache/add-cached-uri uncached cached))))
+       (map (fn [filename]
+              (let [digested (->> filename
+                                  (relative-path (settings/precompile-root))
+                                  (str "/"))
+                    undigested (path/path->undigested digested)]
+                (mem/cache-set! {:undigested undigested
+                                 :digested digested}))))
        dorun))
 
 
