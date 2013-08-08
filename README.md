@@ -12,9 +12,9 @@ files, compiling
 [Haml-coffee](https://github.com/9elements/haml-coffee).
 In addition it minifies javascript using the Google Closure compiler.
 
-Add dieter as a dependency in leiningen
+Add stefon as a dependency in leiningen
 
-    [dieter "0.3.0"]
+    [stefon "0.3.0"]
 
 Insert it into your ring middleware stack
 
@@ -30,10 +30,10 @@ Or if you use noir
 ```
 
 Concatenation of assets is handled by a Dieter manifest file.
-A manifest is a file whose name ends in .dieter and whose contents are
+A manifest is a file whose name ends in .stefon and whose contents are
 a clojure vector of file names / directories to concatenate.
 
-For example, a file named assets/javascripts/app.js.dieter with the following contents:
+For example, a file named assets/javascripts/app.js.stefon with the following contents:
 
 ```clojure
 [
@@ -52,7 +52,7 @@ In order to include links to your assets you may use the link-to-asset function.
 
 ```clojure
 (link-to-asset "stylesheets/reset.css" config-options)
-(link-to-asset "javascripts/app.js.dieter" config-options)
+(link-to-asset "javascripts/app.js.stefon" config-options)
 ```
 
 ## Configuration Options
@@ -63,7 +63,7 @@ In order to include links to your assets you may use the link-to-asset function.
     :cache-root "resources/asset-cache" ; compiled assets are cached here
     :cache-mode :development            ; or :production. :development disables cacheing
     :log-level  :normal                 ; or :quiet
-    :precompiles ["./assets/myfile.js.dieter"] ; list of files for `lein dieter-precompile` to precompile. If left blank (the default), all files will be precompiled, and errors will be ignored.
+    :precompiles ["./assets/myfile.js.stefon"] ; list of files for `lein stefon-precompile` to precompile. If left blank (the default), all files will be precompiled, and errors will be ignored.
 
 Dieter checks for your assets in [asset-root]/assets.
 Compiled assets are always written to the cache-root. In production mode this
@@ -74,9 +74,9 @@ Note you need to pass your config options to asset-pipeline as well as link-to-a
 
 ## Contributing
 
-It is easy to add new preprocessors to dieter. Each preprocessor (CoffeeScript, HamlCoffee, etc)
-uses the default library for that language, hooked up to dieter using the Rhino
-JavaScript library. See dieter-core/src/dieter/assets/ for easy-to-follow examples.
+It is easy to add new preprocessors to stefon. Each preprocessor (CoffeeScript, HamlCoffee, etc)
+uses the default library for that language, hooked up to stefon using the Rhino
+JavaScript library. See stefon-core/src/stefon/assets/ for easy-to-follow examples.
 
 ## Dancing
 
@@ -110,8 +110,8 @@ Distributed under the Eclipse Public License, the same as Clojure.
 * Add expire-never headers
 * Improve Rhino speed by using one engine per thread
 * Update to latest Rhino for better performance
-* Support for `lein dieter-precompile`
-* Add mime type headers for dieter files
+* Support for `lein stefon-precompile`
+* Add mime type headers for stefon files
 
 ### Version 0.2.0
-* Handlebars templates are now a separate library. [dieter-ember](https://github.com/edgecase/dieter-ember)
+* Handlebars templates are now a separate library. [stefon-ember](https://github.com/edgecase/stefon-ember)
