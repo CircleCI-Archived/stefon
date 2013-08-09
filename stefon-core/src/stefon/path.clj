@@ -72,14 +72,17 @@
   (str "/assets/" adrf))
 
 (defn adrf->filename [root adrf]
-  (str root "/assets/" adrf))
+  (str root "/" adrf))
 
 (defn find-file [filename]
-  (when (-?> filename io/file .exists)
-    (io/file filename)))
+  (let [file (io/file filename)]
+    (when (.exists file)
+      file)))
 
 (defn find-asset [adrf]
   {:post [(or (nil? %) (-> % io/file .exists))]}
-  (reduce #(or %1 (find-file (adrf->filename %2 adrf)))
-          nil
-          (settings/asset-roots)))
+  (or (reduce #(or %1 (find-file (inspect (adrf->filename %2 adrf))))
+               nil
+               (settings/asset-roots))
+      (throw (java.io.FileNotFoundException.
+              (str "could not find " adrf " in any of " (settings/asset-roots))))))
