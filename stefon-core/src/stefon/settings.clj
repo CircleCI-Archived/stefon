@@ -1,5 +1,6 @@
 (ns stefon.settings
-  (:require [clojure.java.io :as io]))
+  (:require [clojure.java.io :as io]
+            [stefon.util :refer (inspect)]))
 
 (defonce ^:dynamic *settings*
   {:asset-roots ["resources/assets"] ; returns first one it finds
@@ -21,7 +22,11 @@
   (:precompiles *settings*))
 
 (defn asset-roots []
-  (:asset-roots *settings*))
+  (let [result  (:asset-roots (inspect *settings*))]
+    (doseq [root result]
+      (when-not (inspect (re-matches #".*assets.*" (inspect root)))
+        (throw (Exception. "Root must contain 'assets'"))))
+    result))
 
 (defn production? []
   (-> *settings* :cache-mode (= :development) not))
