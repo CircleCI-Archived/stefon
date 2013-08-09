@@ -34,3 +34,5 @@
         slurp
         str
         (assoc this :content))))
+
+(asset/register "js" map->Js)

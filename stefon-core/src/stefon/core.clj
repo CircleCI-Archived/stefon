@@ -78,11 +78,3 @@ ex. (link-to-asset \"javascripts/app.js\") => \"/assets/javascripts/app-12345678
 (defn init [options]
   (settings/with-options options
     (precompile/load-precompiled-assets)))
-
-(asset/register "coffee" coffee/map->Coffee)
-(asset/register "cs" coffee/map->Coffee)
-(asset/register "css" css/map->Css)
-(asset/register "hamlc" hamlc/map->HamlCoffee)
-(asset/register "js" js/map->Js)
-(asset/register "stefon" manifest/map->Stefon)
-(asset/register :default static/map->Static)

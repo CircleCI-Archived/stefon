@@ -16,6 +16,9 @@
 (defrecord Less [file]
   stefon.asset.Asset
   (read-asset [this]
-    (stefon.asset.css.Css. (:file this) (preprocess-less (:file this)))))
+    (-> this
+        :file
+        stefon.asset.css.Css.
+        (assoc (preprocess-less (:file this))))))
 
 (asset/register "less" map->Less)

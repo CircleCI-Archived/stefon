@@ -24,4 +24,9 @@
 (defrecord HamlCoffee [file]
   stefon.asset.Asset
   (read-asset [this]
-    (stefon.asset.javascript.Js. (:file this) (preprocess-hamlcoffee (:file this)))))
+    (-> this
+        :file
+        stefon.asset.javascript.Js.
+        (assoc (preprocess-hamlcoffee (:file this))))))
+
+(asset/register "hamlc" map->HamlCoffee)

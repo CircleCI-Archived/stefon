@@ -10,10 +10,12 @@
       (s/replace #"\s+" " ")
       (s/replace #"^\s" "")))
 
-(defrecord Css [file content]
+(defrecord Css [file]
   stefon.asset.Asset
   (read-asset [this]
     (assoc this :content
            (slurp-into
             (string-builder "/* Source: " (:file this) " */\n")
             (:file this)))))
+
+(asset/register "css" map->Css)
