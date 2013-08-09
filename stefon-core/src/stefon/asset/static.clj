@@ -8,10 +8,4 @@
            (with-open [in (java.io.BufferedInputStream. (java.io.FileInputStream. (:file this)))]
              (let [buf (make-array Byte/TYPE (.length (:file this)))]
                (.read in buf)
-               buf))))
-
-  stefon.asset.Compressor
-  (compress [this]
-    (:content this)))
-
-(asset/register :default map->Static)
+               buf)))))

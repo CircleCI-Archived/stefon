@@ -19,6 +19,3 @@
   stefon.asset.Asset
   (read-asset [this]
     (stefon.asset.javascript.Js. (:file this) (preprocess-coffeescript (:file this)))))
-
-(asset/register "coffee" map->Coffee)
-(asset/register "cs" map->Coffee)

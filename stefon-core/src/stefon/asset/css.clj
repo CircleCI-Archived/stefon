@@ -16,10 +16,4 @@
     (assoc this :content
            (slurp-into
             (string-builder "/* Source: " (:file this) " */\n")
-            (:file this))))
-
-  stefon.asset.Compressor
-  (compress [this]
-    (compress-css (:content this))))
-
-(asset/register "css" map->Css)
+            (:file this)))))

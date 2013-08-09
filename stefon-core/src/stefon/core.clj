@@ -5,14 +5,15 @@
             [stefon.digest :as digest]
             [stefon.cache.memory :as mem]
             [stefon.util]
+            [stefon.asset.coffeescript :as coffee]
+            [stefon.asset.css :as css]
+            [stefon.asset.hamlcoffee :as hamlc]
+            [stefon.asset.javascript :as js]
+            [stefon.asset.less :as less]
+            [stefon.asset.manifest :as manifest]
+            [stefon.asset.static :as static]
             [stefon.precompile :as precompile]
-            [stefon.asset.coffeescript]
-            [stefon.asset.css]
-            [stefon.asset.hamlcoffee]
-            [stefon.asset.javascript]
-            [stefon.asset.less]
-            [stefon.asset.manifest]
-            [stefon.asset.static]
+            [stefon.util :refer (inspect)]
             [ring.util.response :as response]
             [ring.middleware.file      :refer (wrap-file)]
             [ring.middleware.file-info :refer (wrap-file-info)]
@@ -77,3 +78,11 @@ ex. (link-to-asset \"javascripts/app.js\") => \"/assets/javascripts/app-12345678
 (defn init [options]
   (settings/with-options options
     (precompile/load-precompiled-assets)))
+
+(asset/register "coffee" coffee/map->Coffee)
+(asset/register "cs" coffee/map->Coffee)
+(asset/register "css" css/map->Css)
+(asset/register "hamlc" hamlc/map->HamlCoffee)
+(asset/register "js" js/map->Js)
+(asset/register "stefon" manifest/map->Stefon)
+(asset/register :default static/map->Static)

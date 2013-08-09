@@ -45,5 +45,3 @@ namely a vector or list of file names or directory paths."
 (defrecord Stefon [file]
   stefon.asset.Asset
   (read-asset [this] (compile-manifest (:file this))))
-
-(asset/register "stefon" map->Stefon)

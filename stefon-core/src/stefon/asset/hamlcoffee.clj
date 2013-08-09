@@ -25,5 +25,3 @@
   stefon.asset.Asset
   (read-asset [this]
     (stefon.asset.javascript.Js. (:file this) (preprocess-hamlcoffee (:file this)))))
-
-(asset/register "hamlc" map->HamlCoffee)

@@ -26,16 +26,11 @@
         text
         source))))
 
-(defrecord Js [file content]
+(defrecord Js [file]
   stefon.asset.Asset
   (read-asset [this]
-    (assoc this :content
-           (slurp-into
-            (string-builder "/* Source: " (:file this) " */\n")
-            (:file this))))
-
-  stefon.asset.Compressor
-  (compress [this]
-    (compress-js (:file this) (:content this))))
-
-(asset/register "js" map->Js)
+    (->> this
+        :file
+        slurp
+        str
+        (assoc this :content))))
