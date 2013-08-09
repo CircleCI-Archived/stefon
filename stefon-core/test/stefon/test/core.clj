@@ -5,17 +5,17 @@
             [stefon.path :as path]
             [stefon.asset :as asset]
             [stefon.test.helpers :as h]
+            [stefon.util :refer (inspect)]
             [clojure.java.io :as io])
   (:use clojure.test
         ring.mock.request))
 
 (deftest test-link-to-asset
   (testing "development mode"
-    (let [opts {:cache-mode :development :asset-root "test/fixtures"}]
-      (is (nil? (core/link-to-asset "javascripts/dontfindme.js" opts)))
-      ;; (is (= "/assets/javascripts/app.js" (core/link-to-asset "javascripts/app.js" opts)))
-      ;; (is (= "/assets/javascripts/manifest.js.stefon" (core/link-to-asset "javascripts/manifest.js.stefon" opts)))
-      ))
+    (let [opts {:cache-mode :development :asset-roots ["test/fixtures/assets"]}]
+      (is (thrown? java.io.FileNotFoundException (core/link-to-asset "javascripts/dontfindme.js" opts)))
+      (is (= "/assets/javascripts/app-895a9f207aea908554d644c9bd160d5f.js" (core/link-to-asset "javascripts/app.js" opts)))
+      (is (= "/assets/javascripts/manifest-e4e2f0c89cbafc0ee96ea6e355f8ec4f.js.stefon" (core/link-to-asset "javascripts/manifest.js.stefon" opts)))))
 
   ;; (testing "production mode"
   ;;   (let [opts {:cache-mode :production
