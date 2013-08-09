@@ -35,12 +35,12 @@
   (re-matches #"^/assets/.*" uri))
 
 (defn split-digested-path [path]
-  "return [match path digest extenstion]"
-  (re-matches #"^(.+)-([\da-f]{32})\.(\w+)$" path))
+  "return [match path digest extenstion], or nil"
+  (re-matches #"^(.+)-([\da-f]{32})\.((\w|\.)+)$" path))
 
 (defn split-path [path]
-  "returns [match path extenston]"
-  (re-matches #"^(.+)\.(\w+)$" path))
+  "returns [match path extenston] or nil"
+  (re-matches #"^(.+?)\.((\w|\.)+)$" path))
 
 (defn digest-path? [path]
   (-> path split-digested-path boolean))
@@ -49,7 +49,7 @@
   "Returns the path with the content digest stripped"
   [path]
   {:pre [(digest-path? path)]
-   :post [(not (digest-path? path))]}
+   :post [(not (digest-path? %))]}
   (if-let [[_ fname digest ext] (split-digested-path path)]
     (str fname "." ext)
     path))
@@ -58,13 +58,14 @@
   "Adds a digest to the path based on the content"
   [path content]
   {:pre [(not (digest-path? path))]
-   :post [(digest-path? path)]}
+   :post [(digest-path? %)]}
   (if-let [[_ fname ext] (split-path path)]
     (str fname "-" (digest/digest content) "." ext)
     (str path "-" (digest/digest content))))
 
 (defn uri->adrf [uri]
-  {:pre [(asset-uri? uri)]} ;; uris start with "/assets"
+  {:pre [(asset-uri? uri)]
+   :post [(not (asset-uri? %))]}
   (.substring uri 8))
 
 (defn adrf->uri [adrf]
@@ -81,7 +82,7 @@
 
 (defn find-asset [adrf]
   {:post [(or (nil? %) (-> % io/file .exists))]}
-  (or (reduce #(or %1 (find-file (inspect (adrf->filename %2 adrf))))
+  (or (reduce #(or %1 (find-file (adrf->filename %2 adrf)))
                nil
                (settings/asset-roots))
       (throw (java.io.FileNotFoundException.

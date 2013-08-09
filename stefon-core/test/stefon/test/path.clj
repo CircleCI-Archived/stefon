@@ -1,40 +1,57 @@
 (ns stefon.test.path
-  (:require [stefon.path :as path]
-            [stefon.cache :as cache]
-            [stefon.settings :as settings])
-  (:use clojure.test)
-  (:require [clojure.java.io :as io]))
+  (:require [stefon.path :refer :all]
+            [stefon.util :refer (inspect)]
+            [stefon.digest :as digest]
+            [stefon.settings :as settings]
+            [clojure.java.io :as io]
+            [clojure.test :refer (is)]))
 
-(deftest test-cached-file-path
-  (is (= "resources/asset-cache/assets/foo-d259b08a2dfaf8bf776cbadbe85442d3.js"
-         (cache/cached-file-path "foo.js" "content string"))))
+(def sha1 "01234567890123456789012345678901")
+(def asset-uris ["/assets/something.js" "/assets/something"])
+(def non-asset-uris ["asdasd/assets/" "s/assets/" "/asseTs/" "/assets"])
+(def digested-paths [["/assets/js/file-01234567890123456789012345678901.js"
+                      ["/assets/js/file" "js"]]
+                     ["file-01234567890123456789012345678901.js"
+                      ["file" "js"]]
+                     ["/assets/js/file-01234567890123456789012345678901.js.coffee"
+                      ["/assets/js/file" "js.coffee"]]])
+(def undigested-paths ["/assets/js/file-4567890123456789012345678901.js"])
 
-(deftest test-find-asset
-  (settings/with-options {:asset-root "test/fixtures"}
-    (testing "relative path"
-      (let [file (io/file (path/find-asset "./javascripts/lib/framework.js"))]
-        (is (re-matches #".*test/fixtures/assets/\./javascripts/lib/framework.js$"
-                        (.getPath file)))
-        (is (.exists file)))
-      (is (nil? (path/find-asset "./framework.js"))))
+(deftest asset-uri-works
+  (doseq [uri asset-uris] (is (asset-uri? uri)))
+  (doseq [uri non-asset-uris] (is (not (asset-uri? uri)))))
 
-    (testing "no file exists"
-      (is (nil? (path/find-asset "dontfindme.txt"))))))
+(deftest split-digested-path-works
+  (doseq [[path expected] digested-paths]
+    (let [[_ pathpart digest extension] (split-digested-path path)]
+      (is (and (= digest sha1)
+               (= [pathpart extension] expected)))))
 
-(defn file= [f1 f2]
-  (= (.getCanonicalPath (io/file f1))
-     (.getCanonicalPath (io/file f2))))
+  (doseq [path undigested-paths]
+    (is (nil? (split-digested-path path)))))
 
-(deftest test-add-md5
-  (is (= "/assets/foo-acbd18db4cc2f85cedef654fccc4a4d8.js" (cache/add-md5 "/assets/foo.js" "foo")))
-  (is (= "/assets/foo.js-acbd18db4cc2f85cedef654fccc4a4d8.txt" (cache/add-md5 "/assets/foo.js.txt" "foo")))
-  (is (= "/assets/foo-acbd18db4cc2f85cedef654fccc4a4d8" (cache/add-md5 "/assets/foo" "foo"))))
+(deftest split-path-works
+  (doseq [[path expected] digested-paths]
+    (let [[_ pathpart digest extension] (split-digested-path path)
+          [_ pathpart2 extension2] (split-path path)]
+      (is (= pathpart2 (str pathpart "-" digest))
+          (= extension2 extension)))))
 
-(deftest test-uncachfy-path
-  (is (= "/assets/foo.js" (path/uncachify-path "/assets/foo-acbd18db4cc2f85cedef654fccc4a4d8.js")))
-  (is (= "/assets/foo.js.txt" (path/uncachify-path "/assets/foo.js-acbd18db4cc2f85cedef654fccc4a4d8.txt")))
-  (is (= "/assets/foo.js" (path/uncachify-path "/assets/foo.js"))))
+(deftest is-digest-works
+  (doseq [[path expected] digested-paths]
+    (is (digest-path? path))))
 
-(deftest test-make-relative-to-cache
-  (is (= "/assets/javascripts/awesomesauce-8be397d9c4a3c4ad35f33963fedad96b.js"
-         (path/make-relative-to-cache "./resources/asset-cache/assets/javascripts/awesomesauce-8be397d9c4a3c4ad35f33963fedad96b.js"))))
+(deftest path->undigested-works
+  (doseq [[path [pathpart extension]] digested-paths]
+    (is (= (str pathpart "." extension) (path->undigested path)))))
+
+(deftest path->digested-works
+  (with-redefs [digest/digest (constantly sha1)]
+    (is (= (path->digested "asd.js" "") "asd-01234567890123456789012345678901.js"))
+    (is (= (path->digested "asd.js.coffee" "") "asd-01234567890123456789012345678901.js.coffee"))))
+
+(deftest uri->adrf-works
+  (is (= (uri->adrf "/assets/some-filename") "some-filename")))
+
+(deftest adrf->filename-works
+  (is (= (adrf->filename "asset-root" "some-filename") "asset-root/some-filename")))
