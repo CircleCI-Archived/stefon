@@ -1,4 +1,5 @@
 (ns stefon.cache.memory
+ "Stores the assets in between compiling them or loading them and actually requesting them"
   (:require [clojure.string :as cstr]
             [stefon.settings :as settings]
             [stefon.path :as path]
@@ -40,7 +41,7 @@
     (isFile [] true)
     (isHidden [] false)
     (lastModified [] (System/currentTimeMillis))
-    (length [] (.length (:content asset)))
+    (length [] (-> asset :content .length))
     (list [] [])
     (listFiles [] [])
     (mkdir [])
