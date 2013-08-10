@@ -2,6 +2,7 @@
   (:require [clojure.string :as cstr]
             [stefon.settings :as settings]
             [stefon.path :as path]
+            [stefon.util :refer (inspect)]
             [clojure.java.io :as io]))
 
 (defonce assets (atom {}))
@@ -23,3 +24,28 @@
 
 (defn cache-reset! []
   (reset! assets {}))
+
+(defn file-from-asset [asset]
+  (proxy [java.io.File] [(:digested asset)]
+    (canRead [] true)
+    (canWrite [] false)
+    (canExecute [] false)
+    (createNewFile [] false)
+    (delete [])
+    (deleteOnExit [])
+    (exists [] true)
+    (getCanonicalPath [] (:digested asset))
+    (isAbsolute [] false)
+    (isDirectory [] false)
+    (isFile [] true)
+    (isHidden [] false)
+    (lastModified [] (System/currentTimeMillis))
+    (length [] (.length (:content asset)))
+    (list [] [])
+    (listFiles [] [])
+    (mkdir [])
+    (renameTo [])
+    (setExecutable [flag])
+    (setLastModified [])
+    (setReadable [flag])
+    (setWriteable [flag])))

@@ -2,7 +2,8 @@
   "Middleware for overriding expiration headers for cached Stefon resources"
   (:require [ring.util.response :as res]
             [ring.middleware.file :as file]
-            [stefon.path :as path])
+            [stefon.path :as path]
+            [stefon.util :refer (inspect)])
   (:import (java.util Date Locale TimeZone)
            java.text.SimpleDateFormat))
 

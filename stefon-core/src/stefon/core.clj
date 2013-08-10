@@ -13,7 +13,7 @@
             [stefon.asset.manifest :as manifest]
             [stefon.asset.static :as static]
             [stefon.precompile :as precompile]
-            [stefon.util :refer (inspect)]
+            [stefon.util :refer (inspect wrap-inspect)]
             [ring.util.response :as response]
             [ring.middleware.file      :refer (wrap-file)]
             [ring.middleware.file-info :refer (wrap-file-info)]
@@ -31,7 +31,7 @@
 (defn wrap-cache [app]
   (fn [req]
     (if-let [asset (mem/cache-get (:uri req))]
-      (response/response :body (:content asset))
+      (response/response (mem/file-from-asset asset))
       (app req))))
 
 
@@ -59,18 +59,18 @@ ex. (link-to-asset \"javascripts/app.js\") => \"/assets/javascripts/app-12345678
    handlers in the pipeline."
   [app & [options]]
   (settings/with-options options
-    (when (settings/production?)
+    (if (settings/production?)
       (-> app
-          ;; server directly from memory
+          ;; serve directly from disk, never from memory
           (wrap-file (settings/precompile-root))
           (wrap-file-expires-never (settings/precompile-root))
           (wrap-file-info known-mime-types)
           (wrap-stefon-mime-types))
       (-> app
-          (wrap-cache)
-          (wrap-expires-never)
+          wrap-cache ;; serve directly from memory
+          wrap-expires-never
           (wrap-file-info known-mime-types)
-          (wrap-stefon-mime-types)))))
+          wrap-stefon-mime-types))))
 
 (defn precompile [options] ;; lein stefon-precompile uses this name
   (precompile/precompile options))
