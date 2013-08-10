@@ -7,10 +7,11 @@
 
 (def pool (pools/make-pool))
 
+;; TODO: pass options
 (defn preprocess-less [file]
   (run-compiler pool
                 ["less-wrapper.js" "less-rhino-1.3.3.js"]
-                ;; TODO: pass options
+                "compileLess"
                 file))
 
 (defrecord Less [file]
@@ -19,6 +20,6 @@
     (-> this
         :file
         stefon.asset.css.Css.
-        (assoc (preprocess-less (:file this))))))
+        (assoc :content (preprocess-less (:file this))))))
 
 (asset/register "less" map->Less)

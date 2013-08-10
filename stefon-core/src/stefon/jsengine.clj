@@ -5,7 +5,7 @@
 
 
 ;; TODO: take an asset to avoid slurping here
-(defn run-compiler [pool preloads fn-name file & {:keys [engine]}]
+(defn run-compiler [pool preloads fn-name file]
   (try
     (let [input (slurp file)
           absolute (.getAbsolutePath file)
