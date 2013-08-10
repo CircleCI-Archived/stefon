@@ -65,7 +65,7 @@ ex. (link-to-asset \"javascripts/app.js\") => \"/assets/javascripts/app-12345678
           (wrap-file (settings/precompile-root))
           (wrap-file-expires-never (settings/precompile-root))
           (wrap-file-info known-mime-types)
-          (wrap-stefon-mime-types))
+          wrap-stefon-mime-types)
       (-> app
           wrap-cache ;; serve directly from memory
           wrap-expires-never
