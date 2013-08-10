@@ -60,12 +60,9 @@ defaults to Static if extension is not registered."
 
 (defn build [adrf]
   (when-let [asset (-> adrf
-                       inspect
                        path/find-asset
                        make-asset
-                       read-asset
-                       ;; TODO add back compression
-                       )]
+                       read-asset)]
     (let [undigested-uri (path/adrf->uri adrf)
           digested-uri (path/path->digested undigested-uri (:content asset))]
       (-> asset
