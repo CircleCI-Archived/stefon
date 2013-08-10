@@ -25,3 +25,9 @@
          result# ~value]
      (println value# "is" (with-out-str (pprint/pprint result#)))
      result#))
+
+(defn wrap-inspect
+  "prints the expression '<name> is <value>', and returns the value"
+  [handler]
+  (fn [req]
+    (inspect (handler (inspect req)))))
