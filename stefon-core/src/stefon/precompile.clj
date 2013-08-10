@@ -4,6 +4,7 @@
             [stefon.asset :as asset]
             [stefon.cache.memory :as mem]
             [stefon.digest :as digest]
+            [stefon.util :refer (inspect)]
             [stefon.settings :as settings]))
 
 (defn relative-path [root file]
@@ -13,7 +14,14 @@
     (.substring absfile (inc root-length))))
 
 (defn build-asset [& args]
-  (apply (ns-resolve 'stefon.core 'build-asset) args))
+  (apply (ns-resolve 'stefon.asset 'build) args))
+
+(defn write-asset [asset]
+  (let [f (->> asset
+               :digested
+               path/uri->adrf
+               (io/file (settings/precompile-asset-root)))]
+    (spit f (:content asset))))
 
 (defn delete-dir [directory]
   (->> directory
@@ -28,8 +36,8 @@
 (defn load-precompiled-assets
   "Load any assets already in the cache directory"
   []
-  (->> (settings/precompile-root)
-       (io/file)
+  (->> (settings/precompile-asset-root)
+       io/file
        file-seq
        flatten
        (remove #(.isDirectory %))
@@ -45,13 +53,16 @@
 
 (defn precompile [options]
   (settings/with-options options
-    (-> (settings/precompile-root) delete-dir)
+    (-> (settings/precompile-asset-root) delete-dir)
+    (-> (settings/precompile-asset-root) io/make-parents)
     (if (settings/precompiles)
 
       ;; just the listed files
       ;; TODO add dirs
       (doseq [filename (settings/precompiles)]
-        (build-asset filename))
+        (->> filename
+             build-asset
+             write-asset))
 
       ;; all files
       (doseq [asset-root (settings/asset-roots)]
@@ -64,7 +75,8 @@
                 (try (->> filename
                           (relative-path asset-root)
                           (str "./")
-                          (build-asset))
+                          build-asset
+                          write-asset)
                      (print ".")
                      (catch Exception e
                        (println "Not built" filename)))))
