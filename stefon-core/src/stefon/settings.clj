@@ -4,7 +4,7 @@
 
 (defonce ^:dynamic *settings*
   {:asset-roots ["resources/assets"] ; returns first one it finds
-   :precompile-root "public/assets"
+   :precompile-root "public"
 ;; TODO: remind me how to do polymorphism!
 ;;   :cache stefon.cache.memory
 ;;   :cache (stefon.cache.disk/cache "public/assets")
@@ -18,13 +18,16 @@
 (defn precompile-root []
   (:precompile-root *settings*))
 
+(defn precompile-asset-root []
+  (str (:precompile-root *settings*) "/assets"))
+
 (defn precompiles []
   (:precompiles *settings*))
 
 (defn asset-roots []
-  (let [result  (:asset-roots (inspect *settings*))]
+  (let [result  (:asset-roots *settings*)]
     (doseq [root result]
-      (when-not (inspect (re-matches #".*assets.*" (inspect root)))
+      (when-not (re-matches #".*assets.*" root)
         (throw (Exception. "Root must contain 'assets'"))))
     result))
 
