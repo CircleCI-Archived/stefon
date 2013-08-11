@@ -52,6 +52,7 @@ ex. (link-to-asset \"javascripts/app.js\") => \"/assets/javascripts/app-12345678
    returning that, or passing on the request to the previously existing request
    handlers in the pipeline."
   [app options]
+  (-> (settings/serving-asset-root) io/file .mkdirs)
   (settings/with-options options
     (-> app
         (wrap-file (settings/serving-root))

@@ -43,7 +43,8 @@
 
 (defn precompile [options]
   (settings/with-options options
-    (-> (settings/serving-asset-root) delete-dir)
+    (delete-dir (settings/serving-asset-root) delete-dir)
+    (-> (settings/serving-asset-root) io/file .mkdirs)
 
     (doall
      (for [filename (settings/precompiles)]
