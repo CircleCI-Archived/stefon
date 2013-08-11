@@ -3,7 +3,6 @@
             [stefon.asset :as asset]
             [stefon.path :as path]
             [stefon.digest :as digest]
-            [stefon.cache.memory :as mem]
             [stefon.util]
             [stefon.asset.coffeescript :as coffee]
             [stefon.asset.css :as css]
@@ -21,14 +20,6 @@
             [stefon.middleware.expires :refer (wrap-file-expires-never wrap-expires-never)]
             [stefon.middleware.mime :refer (wrap-stefon-mime-types)]))
 
-
-(defn find-or-build-asset [adrf]
-  (if-let [asset (mem/cache-get adrf)]
-    asset
-    (when-let [asset (asset/build-asset adrf)]
-      (mem/cache-set! asset)
-      asset)))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Entry points
 ;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -44,7 +35,9 @@
   "path should start under assets and not contain a leading slash
 ex. (link-to-asset \"javascripts/app.js\") => \"/assets/javascripts/app-12345678901234567890123456789012.js\""
   (settings/with-options options
-    (-> adrf find-or-build-asset :digested)))
+    (when-not (settings/production?)
+      (asset/build adrf))
+    (manifest/fetch adrf)))
 
 (defn asset-pipeline
   "Construct the Stefon asset pipeline depending on the :cache-mode option, eventually
