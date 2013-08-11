@@ -7,6 +7,8 @@
                  [clj-time "0.4.4"]
                  [org.clojure/core.incubator "0.1.1"]
                  [org.clojure/tools.logging "0.2.3"]
+                 [me.raynes/fs "1.4.4"]
+                 [cheshire "4.0.0"]
                  [com.google.javascript/closure-compiler "r1592"]
                  [clj-v8 "0.1.4"]
                  [clj-v8-native "0.1.4"]]
