@@ -3,6 +3,7 @@
             [clj-time.coerce :as time-coerce]
             [clojure.string :as cstr]
             [clojure.java.io :as io]
+            [clojure.tools.logging :refer (infof)]
             [stefon.settings :as settings]
             [stefon.util :refer (inspect)]
             [stefon.path :as path]))
@@ -73,6 +74,7 @@ defaults to Static if extension is not registered."
                        read-asset)]
     (let [undigested-uri (path/adrf->uri adrf)
           digested-uri (path/path->digested undigested-uri (:content asset))]
+      (infof "[%10s] %s -> %s" (class asset) undigested-uri digested-uri)
       (-> asset
           (assoc :digested digested-uri)
           (assoc :undigested undigested-uri)))))
