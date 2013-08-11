@@ -18,7 +18,7 @@
       (.append builder arg))
     builder))
 
-(defmacro inspect
+(defmacro dump
   "prints the expression '<name> is <value>', and returns the value"
   [value]
   `(let [value# (quote ~value)
@@ -26,8 +26,8 @@
      (println value# "is" (with-out-str (pprint/pprint result#)))
      result#))
 
-(defn wrap-inspect
+(defn wrap-dump
   "prints the expression '<name> is <value>', and returns the value"
   [handler]
   (fn [req]
-    (inspect (handler (inspect req)))))
+    (dump (handler (dump req)))))
