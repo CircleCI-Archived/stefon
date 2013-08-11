@@ -12,7 +12,7 @@
 (defn cache-set! [asset]
   (let [digested (:digested asset)
         undigested (:undigested asset)]
-    (swap! assets assoc digested asset)
+    (swap! assets assoc digested (dissoc asset :content))
     (asset/write-asset asset)))
 
 ;; TODO: can we get rid of this?
