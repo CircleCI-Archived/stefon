@@ -56,9 +56,7 @@
 (defn make-asset [file]
   "returns a newly constructed asset of the proper type as determined by the file extension.
 defaults to Static if extension is not registered."
-  (if-let [f (get @types (file-ext file) (:default @types))]
-    (f {:file file})
-    (throw (Exception. (str "No registered asset-type for " file)))))
+  ((get @types (file-ext file) (:default @types)) {:file file}))
 
 (defn find-asset [adrf]
   {:post [(or (nil? %) (-> % io/file .exists))]}
