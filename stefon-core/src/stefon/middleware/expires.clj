@@ -3,7 +3,7 @@
   (:require [ring.util.response :as res]
             [ring.middleware.file :as file]
             [stefon.path :as path]
-            [stefon.util :refer (inspect)])
+            [stefon.util :refer (dump)])
   (:import (java.util Date Locale TimeZone)
            java.text.SimpleDateFormat))
 

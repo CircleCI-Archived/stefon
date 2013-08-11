@@ -3,7 +3,7 @@
             [clojure.core.incubator :refer (-?>)]
             [clojure.java.io :as io]
             [stefon.settings :as settings]
-            [stefon.util :refer (inspect)]
+            [stefon.util :refer (dump)]
             [stefon.digest :as digest]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

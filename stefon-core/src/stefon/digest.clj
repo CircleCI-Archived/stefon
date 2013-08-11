@@ -1,5 +1,5 @@
 (ns stefon.digest
-  (:require [stefon.util :refer (inspect)])
+  (:require [stefon.util :refer (dump)])
   (:import [java.security MessageDigest]))
 
 (derive (class (make-array Byte/TYPE 0)) ::bytes)

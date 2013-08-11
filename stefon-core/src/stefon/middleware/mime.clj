@@ -1,7 +1,7 @@
 (ns stefon.middleware.mime
   "Middleware for sending mime types of stefon files"
   (:require [ring.util.response :as response]
-            [stefon.util :refer (inspect)]))
+            [stefon.util :refer (dump)]))
 
 (defn stefon-file-type [filename]
   (cond
