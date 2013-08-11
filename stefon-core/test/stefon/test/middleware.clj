@@ -22,7 +22,7 @@
 
         prod-asset (asset "test.js "{:asset-roots ["test/fixtures/middleware/resources/assets"]
                                      :precompiles ["test.js"]
-                                     :precompile-root "test/fixtures/middleware/public"
+                                     :serving-root "test/fixtures/middleware/public"
                                      :cache-mode :production})]
 
 
