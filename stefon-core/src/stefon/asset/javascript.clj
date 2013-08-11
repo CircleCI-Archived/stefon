@@ -30,9 +30,9 @@
   stefon.asset.Asset
   (read-asset [this]
     (->> this
-        :file
-        slurp
-        str
-        (assoc this :content))))
+         :file
+         slurp
+         str
+         (assoc this :content))))
 
 (asset/register "js" map->Js)
