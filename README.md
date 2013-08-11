@@ -100,7 +100,7 @@ The following configuration options are available.
 ;; The root for compiled assets, which are written to (serving-root)/assets. In dev mode defaults to "/tmp/stefon")
 :serving-root "public"
 
-;; Set to :production to serve precompiled files, or when running `lein dieter-precompile`
+;; Set to :production to serve precompiled files, or when running `lein stefon-precompile`
 :cache-mode :development
 
 ;; When precompiling, the list of files to precompile. Can take regexes, which will attempt to match all files in the asset roots
