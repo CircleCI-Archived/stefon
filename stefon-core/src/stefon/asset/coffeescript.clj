@@ -1,27 +1,9 @@
 (ns stefon.asset.coffeescript
-  (:require [stefon.asset :as asset]
-            stefon.asset.javascript
-            [stefon.pools :as pools])
-  (:use [stefon.jsengine :only (run-compiler)]))
+  (:require [stefon.jsengine :as jsengine]
+            [stefon.asset :as asset]))
 
-(def pool (pools/make-pool))
+(def compile (jsengine/compiler "compileCoffeeScript"
+                                ["coffee-script.js" "coffee-wrapper.js"]))
 
-(defn compile-coffeescript [file]
-  (run-compiler pool
-                ["coffee-script.js" "coffee-wrapper.js"]
-                "compileCoffeeScript"
-                file))
-
-(defn preprocess-coffeescript [file]
-  (asset/memoize-file file compile-coffeescript))
-
-(defrecord Coffee [file]
-  stefon.asset.Asset
-  (read-asset [this]
-    (-> this
-        :file
-        stefon.asset.javascript.Js.
-        (assoc :content (preprocess-coffeescript (:file this))))))
-
-(asset/register "coffee" map->Coffee)
-(asset/register "cs" map->Coffee)
+(asset/register "cs" compile)
+(asset/register "coffee" compile)

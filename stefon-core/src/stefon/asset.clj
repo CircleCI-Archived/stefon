@@ -1,65 +1,31 @@
 (ns stefon.asset
   (:require [clj-time.core :as time]
-            [clj-time.coerce :as time-coerce]
             [clojure.string :as cstr]
             [clojure.java.io :as io]
             [clojure.tools.logging :refer (infof)]
+            [me.raynes.fs :as fs]
             [stefon.settings :as settings]
-            [stefon.util :refer (inspect)]
-            [stefon.path :as path]))
-
-(defprotocol Asset
-  "Protocol for pre-processing assets"
-  (read-asset [this]
-    "Perform all pre-processing on the object. Must return an Asset."))
-
-;;;;;;;;;;;;;;;;;;;;;;;
-;;; Memoizing already compiled assets
-;;;;;;;;;;;;;;;;;;;;;;;
-
-(def memoized (atom {}))
-(defn memoize-file [file f]
-  "Ability to cache precomputed files using timestamps (avoiding the term \"cache\" since it'ss already overloaded here)"
-  (let [filename (.getCanonicalPath file)
-        val (get @memoized filename)
-        current-timestamp (-> file .lastModified time-coerce/from-long)
-        saved-timestamp (:timestamp val)
-        saved-content (:content val)]
-    (if (and saved-content
-             (time/before? current-timestamp saved-timestamp))
-
-      ;; return already memory
-      saved-content
-
-      ;; compute new value and save it
-      (let [new-content (f file)]
-        (dosync
-         (swap! memoized assoc filename {:content new-content
-                                         :timestamp (time/now)}))
-        new-content))))
+            [stefon.jsengine :as jsengine]
+            [stefon.manifest :as manifest]
+            [stefon.util :refer (dump)]
+            [stefon.path :as path])
+  (:import [java.io BufferedInputStream FileInputStream]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Register assets
 ;;;;;;;;;;;;;;;;;;;;;;;
-
 "mapping of file types to constructor functions"
 (defonce types
   (atom {}))
 
-(defn register [ext constructor-fn]
-  "register a new asset constructor for files with the file extension ext"
-  (swap! types assoc ext constructor-fn)
-  nil)
+(defn register [extension processor]
+  (swap! types assoc extension processor))
 
-(defn file-ext [file]
-  (last (cstr/split (str file) #"\.")))
+;;;;;;;;;;;;;;;;;;;;;;;
+;;; Compiler
+;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn make-asset [file]
-  "returns a newly constructed asset of the proper type as determined by the file extension.
-defaults to Static if extension is not registered."
-  ((get @types (file-ext file) (:default @types)) {:file file}))
-
-(defn find-asset [adrf]
+(defn find-file [adrf]
   {:post [(or (nil? %) (-> % io/file .exists))]}
   (or (reduce #(or %1 (path/find-file (path/adrf->filename %2 adrf)))
                nil
@@ -67,18 +33,11 @@ defaults to Static if extension is not registered."
       (throw (java.io.FileNotFoundException.
               (str "could not find " adrf " in any of " (settings/asset-roots))))))
 
-(defn build-asset [adrf]
-  (when-let [asset (-> adrf
-                       find-asset
-                       make-asset
-                       read-asset)]
-    (let [undigested-uri (path/adrf->uri adrf)
-          digested-uri (path/path->digested undigested-uri (:content asset))]
-      (infof "[%10s] %s -> %s" (class asset) undigested-uri digested-uri)
-      (-> asset
-          (assoc :digested digested-uri)
-          (assoc :undigested undigested-uri)))))
-
+(defn read-file [file]
+  (with-open [in (-> file FileInputStream. BufferedInputStream.)]
+    (let [buf (-> file .length byte-array)]
+      (.read in buf)
+      buf)))
 
 (derive (class (make-array Byte/TYPE 0)) ::bytes)
 (derive java.lang.String ::string-like)
@@ -100,3 +59,33 @@ defaults to Static if extension is not registered."
     (io/make-parents f)
     (write-to-disk f (:content asset))
     (:digested asset)))
+
+
+(defn apply-pipeline [file content]
+  (let  [name (fs/name file)
+         ext (fs/extension file)
+         precompiler (get @types ext)]
+    ;; TODO there is a way to skip stages too, if they've been precompiled
+    (if ext
+      (do
+        ;; TODO: md5 source + options
+        ;; TODO: check-disk
+        (infof "[%10s] %s -> %s" ext file name)
+        (apply-pipeline name (precompiler content)))
+      (do
+        [file ext content]))))
+
+(defn compile
+  "returns [content filename]"
+  [adrf]
+   (->> adrf
+        find-file
+        read-file
+        (apply-pipeline (fs/file adrf))))
+
+(defn build [adrf]
+  (let [[undigested content] (compile adrf)
+        digested (path/path->digested undigested content)]
+    (infof "%s -> %s" adrf digested)
+    (manifest/set! undigested digested)
+    (write-asset content digested)))
