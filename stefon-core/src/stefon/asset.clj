@@ -79,11 +79,24 @@ defaults to Static if extension is not registered."
           (assoc :digested digested-uri)
           (assoc :undigested undigested-uri)))))
 
+
+(derive (class (make-array Byte/TYPE 0)) ::bytes)
+(derive java.lang.String ::string-like)
+(derive java.lang.StringBuilder ::string-like)
+
+(defmulti write-to-disk (fn [f c] (class c)))
+(defmethod write-to-disk ::string-like [file content]
+  (spit file content))
+
+(defmethod write-to-disk ::bytes [file content]
+  (with-open [out (java.io.FileOutputStream. file)]
+    (.write out content)))
+
 (defn write-asset [asset]
   (let [f (->> asset
                :digested
                path/uri->adrf
                (io/file (settings/serving-asset-root)))]
     (io/make-parents f)
-    (spit f (:content asset))
+    (write-to-disk f (:content asset))
     (:digested asset)))
