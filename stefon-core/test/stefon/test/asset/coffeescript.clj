@@ -1,21 +1,31 @@
 (ns stefon.test.asset.coffeescript
-  (:require [stefon.test.helpers :as h]
-            [stefon.asset.coffeescript :as cs]
-            [clojure.java.io :as io])
+  (:require [stefon.asset :as asset]
+            [stefon.settings :as settings]
+            [stefon.test.helpers :as h])
   (:use clojure.test))
 
-(deftest test-preprocess-coffeescript
-  (testing "we have a chance to succeed"
-    (is (.exists (io/file "test/fixtures/assets/javascripts/test.js.coffee"))))
-  (testing "basic coffee file"
-    (is (= "(function() {\n\n  (function(param) {\n    return alert(\"x\");\n  });\n\n}).call(this);\n"
-           (cs/preprocess-coffeescript
-            (io/file "test/fixtures/assets/javascripts/test.js.coffee")))))
-  (testing "syntax error"
+(defn test-expected [root file expected]
+  (settings/with-options {:asset-roots [root]}
+    (is (= expected
+            (-> file
+                asset/compile
+                first)))))
+
+(defn test-syntax [root file expecteds]
+  (settings/with-options {:asset-roots [root]}
     (try
-      (cs/preprocess-coffeescript
-       (io/file "test/fixtures/assets/javascripts/bad.js.coffee"))
-      (is false) ; must throw
+      (asset/compile file)
+      (is false)
       (catch Exception e
-        (is (h/has-text? (.toString e) "on line 2"))
-        (is (h/has-text? (.toString e) "unmatched ]"))))))
+        (doseq [expected expecteds]
+          (is (h/has-text? (.toString e) expected)))))))
+
+
+(deftest test-coffeescript
+  (test-expected "test/fixtures/assets"
+                 "javascripts/test.js.coffee"
+                 "(function() {\n\n  (function(param) {\n    return alert(\"x\");\n  });\n\n}).call(this);\n")
+
+  (test-syntax "test/fixtures/assets"
+               "javascripts/bad.js.coffee"
+               ["on line 2"  "unmatched ]"]))
