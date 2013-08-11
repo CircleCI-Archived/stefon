@@ -4,25 +4,23 @@ Stefon is an asset pipeline for Clojure, closely modelled after Ruby's [Sprocket
 It is a rewrite of [dieter](https://github.com/edgecase/dieter).
 
 Stefon is fast, easy to use, and easy to extend.
-It uses idiomatic clojure, and is written to support both development use (ie it is very fast), and production (it precompiles
+It uses idiomatic clojure, and is written to support both development use (ie it is very fast), and production use (it precompiles for deployment to a CDN).
 Stefon's major selling points are speed, its ease of use in production and development, and its ability to support multiple languages and compressors.
-It is easy to
+
 
 ## Usage
 
 Stefon is an asset pipeline.
-In production, it is used to compile assets to be served by a CDN or via Ring's file-wrap middleware.
+In production, it is used to precompile assets to be served by a CDN or via Ring's file-wrap middleware.
 In develepment mode, it serves files directly, recompiling them on changes.
-
-It's primary usage is to compile assets directly, though in development mode it also serves files directly, and reduces compilation time.
 
 
 ### Installation
 
 Add stefon as a dependency in leiningen
 
-  :dependencies [[stefon "0.5.0"]]
-  :plugins [[lein-stefon-precompile "0.5.0"]]
+    :dependencies [[stefon "0.5.0"]]
+    :plugins [[lein-stefon-precompile "0.5.0"]]
 
 Insert it into your ring middleware stack
 
@@ -50,7 +48,7 @@ Concatenation of assets is handled by a Stefon manifest file.
 A manifest is a file whose name ends in .stefon and whose contents are
 a clojure vector of file names / directories to concatenate.
 
-For example, a file named assets/javascripts/app.js.stefon with the following contents:
+For example, a file named `assets/javascripts/app.js.stefon` with the following contents:
 
 ```clojure
 [
@@ -87,25 +85,35 @@ and then load the precompiled files
 
 ```clojure
 (defn init []
-      (dieter/init dieter-options))
+      (stefon/init stefon-options))
 ```
 
 
 ### Configuration Options
 
-    :asset-roots ["resources"]          ; must have a folder called 'assets'. Searched for assets in the order listed.
-    :cache-mode :development            ; or :production. :development disables cacheing
-    :precompiles ["./assets/myfile.js.stefon"] ; list of files for `lein stefon-precompile` to precompile. If left blank (the default), all files will be precompiled, and errors will be ignored.
+The following configuration options are available.
 
-Stefon checks for your assets in [asset-root]/assets.
+```clojure
+;; Searched for assets in the order listed. Must have a folder called 'assets'. 
+:asset-roots ["resources"]
 
-Note you need to pass your config options to asset-pipeline as well as link-to-asset.
+;; The root for compiled assets, which are written to (serving-root)/assets. In dev mode defaults to "/tmp/stefon")
+:serving-root "public"
+
+;; Set to :production to serve precompiled files, or when running `lein dieter-precompile`
+:cache-mode :development
+
+;; When precompiling, the list of files to precompile. Can take regexes, which will attempt to match all files in the asset roots
+:precompiles ["./assets/myfile.js.stefon"]
+```
+
+Note you need to pass your config options to `asset-pipeline` as well as `link-to-asset`.
 
 ## Contributing
 
 It is easy to add new preprocessors to stefon.
 Most asset types uses the default library for that language, hooked up to stefon using V8.
-See stefon-core/src/stefon/assets/ for easy-to-follow examples.
+See [the source](https://github.com/circleci/stefon/blob/master/stefon-core/src/stefon/asset) for easy-to-follow examples.
 
 ## License
 
@@ -123,14 +131,15 @@ With contributions [by many other](https://github.com/circleci/stefon/graphs/con
 ### Version 0.5.0 (first release of stefon)
 * Almost complete rewrite, with many backward incompatible changes
 * forked to circleci/stefon
-* No longer support Rhino
+* No longer supports Rhino
 * production mode always loads from disk - there is no option to compile lazily
-* dev mode is completely in memory
+* dev mode mirrors production mode exactly
 * the timestamp thing is gone
-* Many settings removed, we're down to :asset-roots, :precompile-root, :cache-mode and :precompiles
+* Many settings removed, we're down to :asset-roots, :serving-root, :cache-mode and :precompiles
 - The pipeline is now truly a pipeline, supporting more than one transformation per file
 - Add data-uri support
 - allow options to be passed to each compiler
+- support different versions of each language
 - add image compression
 - add more compressors
 - add more languages, esp markdown
