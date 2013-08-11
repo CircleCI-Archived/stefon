@@ -101,7 +101,7 @@ The following configuration options are available.
 :serving-root "public"
 
 ;; Set to :production to serve precompiled files, or when running `lein stefon-precompile`
-:cache-mode :development
+:mode :development
 
 ;; When precompiling, the list of files to precompile. Can take regexes, which will attempt to match all files in the asset roots
 :precompiles ["./assets/myfile.js.stefon"]
@@ -135,7 +135,7 @@ With contributions [by many other](https://github.com/circleci/stefon/graphs/con
 * production mode always loads from disk - there is no option to compile lazily
 * dev mode mirrors production mode exactly
 * the timestamp thing is gone
-* Many settings removed, we're down to :asset-roots, :serving-root, :cache-mode and :precompiles
+* Many settings removed, we're down to :asset-roots, :serving-root, :mode, manifest-file and :precompiles
 - The pipeline is now truly a pipeline, supporting more than one transformation per file
 - Add data-uri support
 - allow options to be passed to each compiler
