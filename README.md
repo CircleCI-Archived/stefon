@@ -94,7 +94,7 @@ and then load the precompiled files
 The following configuration options are available.
 
 ```clojure
-;; Searched for assets in the order listed. Must have a folder called 'assets'. 
+;; Searched for assets in the order listed. Must have a folder called 'assets'.
 :asset-roots ["resources"]
 
 ;; The root for compiled assets, which are written to (serving-root)/assets. In dev mode defaults to "/tmp/stefon")
@@ -143,7 +143,9 @@ With contributions [by many other](https://github.com/circleci/stefon/graphs/con
 - add image compression
 - add more compressors
 - add more languages, esp markdown
-- cdn support
+- cdn support (port from circleci)
+- rewrite diretory functions to use raynes/fs
+- use proper tmp dirs
 - drop support for lein1, lein2 only
 
 ### Version 0.4.0 (released as dieter)
