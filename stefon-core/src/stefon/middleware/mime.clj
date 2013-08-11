@@ -4,7 +4,6 @@
             [stefon.util :refer (inspect)]))
 
 (defn stefon-file-type [filename]
-  (inspect filename)
   (cond
    (re-matches #".*css.stefon$" filename) "text/css"
    (re-matches #".*js.stefon$" filename) "text/javascript"))

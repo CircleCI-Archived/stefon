@@ -3,16 +3,14 @@
             [stefon.pools :as pools]
             [stefon.v8 :as v8]))
 
-
 ;; TODO: take an asset to avoid slurping here
 (defn run-compiler [pool preloads fn-name file]
   (try
     (let [input (slurp file)
           absolute (.getAbsolutePath file)
-          filename (.getCanonicalPath file)
-          args [input absolute filename]]
+          filename (.getCanonicalPath file)]
       (v8/with-scope pool preloads
-        (v8/call fn-name args)))
+        (v8/call fn-name [input absolute filename])))
     (catch Exception e
       (let [ste (StackTraceElement. "jsengine"
                                     "compileHamlCoffee" (.getPath file) -1)
