@@ -11,7 +11,7 @@
 (defn preprocess-less [file]
   (run-compiler pool
                 ["less-wrapper.js" "less-rhino-1.3.3.js"]
-                "compileLess"
+                "compileLessNoCompress"
                 file))
 
 (defrecord Less [file]

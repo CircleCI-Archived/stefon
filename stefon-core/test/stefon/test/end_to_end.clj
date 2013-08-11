@@ -1,4 +1,4 @@
-(ns stefon.test.middleware
+(ns stefon.test.end-to-end
   (:require [stefon.core :as core]
             [stefon.settings :as settings]
             [stefon.path :as path]
@@ -14,7 +14,7 @@
                    (-> opts precompile/precompile first)
                    (core/link-to-asset undigested opts))
         pipeline (core/asset-pipeline app opts)]
-    (pipeline (request :get (inspect digested)))))
+    (pipeline (request :get digested))))
 
 (deftest wrap-cache-works-with-wrap-file-info
   (let [dev-asset (asset "test.js" {:asset-roots ["test/fixtures/middleware/resources/assets"]
@@ -31,7 +31,7 @@
            (-> prod-asset :status)
            200))
 
-    (is (= (-> dev-asset inspect :headers (get "Content-Length"))
+    (is (= (-> dev-asset :headers (get "Content-Length"))
            (-> prod-asset :headers (get "Content-Length"))
            "11"))
 
