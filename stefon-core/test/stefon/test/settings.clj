@@ -6,9 +6,9 @@
 
 
 (deftest disallow-asset-root-without-assets
-  (is (thrown? Exception)
-      (settings/with-options {:asset-roots ["aasd"]}
-        (settings/asset-roots))))
+  (is (thrown? Exception
+               (settings/with-options {:asset-roots ["aasd"]}
+                 (settings/asset-roots)))))
 
 (deftest works-fine-with-assets
   (is (settings/with-options {:asset-roots ["aasd/assets"]}

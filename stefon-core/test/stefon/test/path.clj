@@ -4,7 +4,7 @@
             [stefon.digest :as digest]
             [stefon.settings :as settings]
             [clojure.java.io :as io]
-            [clojure.test :refer (is)]))
+            [clojure.test :refer :all]))
 
 (def sha1 "01234567890123456789012345678901")
 (def asset-uris ["/assets/something.js" "/assets/something"])

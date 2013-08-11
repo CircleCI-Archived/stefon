@@ -1,4 +1,4 @@
-(ns stefon.test-core
+(ns stefon.test.core
   (:require [stefon.core :as core]
             [stefon.settings :as settings]
             [stefon.cache.memory :as mem]

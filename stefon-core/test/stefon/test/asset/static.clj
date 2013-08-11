@@ -8,13 +8,14 @@
 
 (deftest test-static-assets
   (let [file (io/file "test/fixtures/assets/images/stefon.jpeg")
-        asset (asset/read-asset (Static. file nil))]
+        asset (asset/read-asset (Static. file))]
 
     (testing "read-asset"
       (is (= (.length file)
              (count (:content asset)))))
 
-    (testing "compress returns unmodified content"
-      (settings/with-options {:compress true}
-        (is (= (:content asset)
-               (asset/compress asset)))))))
+    ;; (testing "compress returns unmodified content"
+    ;;   (settings/with-options {:compress true}
+    ;;     (is (= (:content asset)
+    ;;            (asset/compress asset)))))
+    ))

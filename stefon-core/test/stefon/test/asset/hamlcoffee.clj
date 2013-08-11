@@ -14,23 +14,21 @@
        "\");\n      return $o.join(\"\\n\");\n    }).call(context);\n  };\n\n}).call(this);\n"))
 
 (deftest test-preprocess-hamlcoffee
-  (h/with-both-engines
-    (testing "basic hamlc file"
-      (is (= (wrap "basic"  "<!DOCTYPE html>\\n<html>\\n  <head>\\n    <title>\\n      Title\\n    </title>\\n  </head>\\n  <body>\\n    <h1>\\n      Header\\n    </h1>\\n  </body>\\n</html>")
-             (hc/preprocess-hamlcoffee
-              (io/file "test/fixtures/assets/javascripts/basic.hamlc")))))))
+  (testing "basic hamlc file"
+    (is (= (wrap "basic"  "<!DOCTYPE html>\\n<html>\\n  <head>\\n    <title>\\n      Title\\n    </title>\\n  </head>\\n  <body>\\n    <h1>\\n      Header\\n    </h1>\\n  </body>\\n</html>")
+           (hc/preprocess-hamlcoffee
+            (io/file "test/fixtures/assets/javascripts/basic.hamlc"))))))
 
 (deftest test-caching
-  (h/with-both-engines
-    (testing "we get the same result when there are caches"
-      (is (= (hc/preprocess-hamlcoffee
-              (io/file "test/fixtures/assets/javascripts/basic.hamlc"))
-             (hc/preprocess-hamlcoffee
-              (io/file "test/fixtures/assets/javascripts/basic.hamlc"))
-             (hc/preprocess-hamlcoffee
-              (io/file "test/fixtures/assets/javascripts/basic.hamlc"))
-             (hc/preprocess-hamlcoffee
-              (io/file "test/fixtures/assets/javascripts/basic.hamlc")))))))
+  (testing "we get the same result when there are caches"
+    (is (= (hc/preprocess-hamlcoffee
+            (io/file "test/fixtures/assets/javascripts/basic.hamlc"))
+           (hc/preprocess-hamlcoffee
+            (io/file "test/fixtures/assets/javascripts/basic.hamlc"))
+           (hc/preprocess-hamlcoffee
+            (io/file "test/fixtures/assets/javascripts/basic.hamlc"))
+           (hc/preprocess-hamlcoffee
+            (io/file "test/fixtures/assets/javascripts/basic.hamlc"))))))
 
   ;; (testing "file with surround and succeed"
   ;;   (is (= "TODO"

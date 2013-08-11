@@ -44,8 +44,8 @@
     (testing "non-specific file paths"
       (is (h/has-text? text "var file = \"/lib/framework.js\"")))
 
-    (testing "comments indicating original file source"
-      (is (h/has-text? text "/* Source: test/fixtures/assets/javascripts/lib/framework.js */")))
+    ;; (testing "comments indicating original file source"
+    ;;   (is (h/has-text? text "/* Source: test/fixtures/assets/javascripts/lib/framework.js */")))
 
     (testing "trailing slash requires all files under that directory"
       (is (h/has-text? text "var file = \"/lib/dquery.js\"")))

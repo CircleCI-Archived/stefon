@@ -21,9 +21,3 @@
      (not= -1 (.indexOf text expected)))
   ([text expected times]
      (= times (count (re-seq (re-pattern expected) text)))))
-
-(defmacro with-both-engines [& body]
-  `(binding [settings/*settings* (merge settings/*settings* {:engine :rhino})]
-     ~@body)
-  `(binding [settings/*settings* (merge settings/*settings* {:engine :v8})]
-     ~@body))
