@@ -21,7 +21,7 @@
     (-> this
         :file
         stefon.asset.javascript.Js.
-        (assoc (preprocess-coffeescript (:file this))))))
+        (assoc :content (preprocess-coffeescript (:file this))))))
 
 (asset/register "coffee" map->Coffee)
 (asset/register "cs" map->Coffee)

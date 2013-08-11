@@ -27,6 +27,6 @@
     (-> this
         :file
         stefon.asset.javascript.Js.
-        (assoc (preprocess-hamlcoffee (:file this))))))
+        (assoc :content (preprocess-hamlcoffee (:file this))))))
 
 (asset/register "hamlc" map->HamlCoffee)
