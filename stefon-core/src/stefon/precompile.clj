@@ -13,16 +13,6 @@
         root-length (count absroot)]
     (.substring absfile (inc root-length))))
 
-(defn build-asset [& args]
-  (apply (ns-resolve 'stefon.asset 'build) args))
-
-(defn write-asset [asset]
-  (let [f (->> asset
-               :digested
-               path/uri->adrf
-               (io/file (settings/precompile-asset-root)))]
-    (spit f (:content asset))))
-
 (defn delete-dir [directory]
   (->> directory
        io/file
@@ -36,14 +26,14 @@
 (defn load-precompiled-assets
   "Load any assets already in the cache directory"
   []
-  (->> (settings/precompile-asset-root)
+  (->> (settings/serving-asset-root)
        io/file
        file-seq
        flatten
        (remove #(.isDirectory %))
        (map (fn [filename]
               (let [digested (->> filename
-                                  (relative-path (settings/precompile-root))
+                                  (relative-path (settings/serving-root))
                                   (str "/"))
                     undigested (path/path->undigested digested)]
                 (mem/cache-set! {:undigested undigested
@@ -53,31 +43,10 @@
 
 (defn precompile [options]
   (settings/with-options options
-    (-> (settings/precompile-asset-root) delete-dir)
-    (-> (settings/precompile-asset-root) io/make-parents)
-    (if (settings/precompiles)
+    (-> (settings/serving-asset-root) delete-dir)
 
-      ;; just the listed files
-      ;; TODO add dirs
-      (doseq [filename (settings/precompiles)]
-        (->> filename
-             build-asset
-             write-asset))
-
-      ;; all files
-      (doseq [asset-root (settings/asset-roots)]
-        (->>
-         (io/file asset-root "assets")
-         file-seq
-         flatten
-         (remove #(.isDirectory %))
-         (map (fn [filename]
-                (try (->> filename
-                          (relative-path asset-root)
-                          (str "./")
-                          build-asset
-                          write-asset)
-                     (print ".")
-                     (catch Exception e
-                       (println "Not built" filename)))))
-         dorun)))))
+    (doall
+     (for [filename (settings/precompiles)]
+       (->> filename
+            asset/build-asset
+            asset/write-asset)))))

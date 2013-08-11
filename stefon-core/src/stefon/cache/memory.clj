@@ -3,6 +3,7 @@
   (:require [clojure.string :as cstr]
             [stefon.settings :as settings]
             [stefon.path :as path]
+            [stefon.asset :as asset]
             [stefon.util :refer (inspect)]
             [clojure.java.io :as io]))
 
@@ -11,9 +12,11 @@
 (defn cache-set! [asset]
   (let [digested (:digested asset)
         undigested (:undigested asset)]
-    (swap! assets assoc digested asset)))
+    (swap! assets assoc digested asset)
+    (asset/write-asset asset)))
 
-
+;; TODO: can we get rid of this?
+;; TODO: or maybe get rid of asset content entirely from assets
 (defn cache-set-empty!
   "Add an empty asset with for a path. Useful for loading precompiled assets, and testing"
   [undigested digested]
@@ -25,28 +28,3 @@
 
 (defn cache-reset! []
   (reset! assets {}))
-
-(defn file-from-asset [asset]
-  (proxy [java.io.File] [(:digested asset)]
-    (canRead [] true)
-    (canWrite [] false)
-    (canExecute [] false)
-    (createNewFile [] false)
-    (delete [])
-    (deleteOnExit [])
-    (exists [] true)
-    (getCanonicalPath [] (:digested asset))
-    (isAbsolute [] false)
-    (isDirectory [] false)
-    (isFile [] true)
-    (isHidden [] false)
-    (lastModified [] (System/currentTimeMillis))
-    (length [] (-> asset :content .length))
-    (list [] [])
-    (listFiles [] [])
-    (mkdir [])
-    (renameTo [])
-    (setExecutable [flag])
-    (setLastModified [])
-    (setReadable [flag])
-    (setWriteable [flag])))

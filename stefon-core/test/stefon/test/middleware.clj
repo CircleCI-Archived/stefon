@@ -1,35 +1,37 @@
 (ns stefon.test.middleware
   (:require [stefon.core :as core]
             [stefon.settings :as settings]
+            [stefon.path :as path]
+            [stefon.cache.memory :as mem]
             [stefon.precompile :as precompile]
             [stefon.util :refer (inspect)])
   (:use clojure.test
         ring.mock.request))
 
+(defn asset [undigested {:as opts :keys [cache-mode]}]
+  (let [app (fn [req] (throw (Exception. "should never be reached")))
+        digested (if (= cache-mode :production)
+                   (-> opts precompile/precompile first)
+                   (core/link-to-asset undigested opts))
+        pipeline (core/asset-pipeline app opts)]
+    (pipeline (request :get (inspect digested)))))
 
 (deftest wrap-cache-works-with-wrap-file-info
-  (let [app (fn [req] (throw (Exception. "should never be reached")))
-        dev-opts {:asset-roots ["test/fixtures/middleware/resources/assets"]
-                  :cache-mode :development}
-        sha1-name (core/link-to-asset "test.js" dev-opts)
-        dev-pipeline (core/asset-pipeline app dev-opts)
-        dev-asset (dev-pipeline (request :get sha1-name))
+  (let [dev-asset (asset "test.js" {:asset-roots ["test/fixtures/middleware/resources/assets"]
+                                    :cache-mode :development})
 
-        prod-opts {:asset-roots ["test/fixtures/middleware/resources/assets"]
-                   :precompiles ["test.js"]
-                   :precompile-root "test/fixtures/middleware/public"
-                   :cache-mode :production}
-        _ (precompile/precompile prod-opts)
-        prod-pipeline (core/asset-pipeline app prod-opts)
-        prod-asset (prod-pipeline (request :get sha1-name))]
+        prod-asset (asset "test.js "{:asset-roots ["test/fixtures/middleware/resources/assets"]
+                                     :precompiles ["test.js"]
+                                     :precompile-root "test/fixtures/middleware/public"
+                                     :cache-mode :production})]
 
-    (is (= sha1-name "/assets/test-f20372f6903e89fbd11fb2d2684922d0.js"))
+
     (is dev-asset)
     (is (= (-> dev-asset :status)
            (-> prod-asset :status)
            200))
 
-    (is (= (-> dev-asset :headers (get "Content-Length"))
+    (is (= (-> dev-asset inspect :headers (get "Content-Length"))
            (-> prod-asset :headers (get "Content-Length"))
            "11"))
 
@@ -39,8 +41,4 @@
 
     (is (= (-> prod-asset :headers (get "Expires"))
            (-> dev-asset :headers (get "Expires"))))
-    (is (-> prod-asset :headers (get "Expires")))
-
-    ;; TODO: body file is wrong and probably wont server the asset - replace
-    ;; with string itself - use read
-    (is (= (inspect dev-asset) (inspect prod-asset)))))
+    (is (-> prod-asset :headers (get "Expires")))))

@@ -2,6 +2,8 @@
   (:require [clj-time.core :as time]
             [clj-time.coerce :as time-coerce]
             [clojure.string :as cstr]
+            [clojure.java.io :as io]
+            [stefon.settings :as settings]
             [stefon.util :refer (inspect)]
             [stefon.path :as path]))
 
@@ -58,9 +60,17 @@ defaults to Static if extension is not registered."
     (f {:file file})
     (throw (Exception. (str "No registered asset-type for " file)))))
 
-(defn build [adrf]
+(defn find-asset [adrf]
+  {:post [(or (nil? %) (-> % io/file .exists))]}
+  (or (reduce #(or %1 (path/find-file (path/adrf->filename %2 adrf)))
+               nil
+               (settings/asset-roots))
+      (throw (java.io.FileNotFoundException.
+              (str "could not find " adrf " in any of " (settings/asset-roots))))))
+
+(defn build-asset [adrf]
   (when-let [asset (-> adrf
-                       path/find-asset
+                       find-asset
                        make-asset
                        read-asset)]
     (let [undigested-uri (path/adrf->uri adrf)
@@ -68,3 +78,12 @@ defaults to Static if extension is not registered."
       (-> asset
           (assoc :digested digested-uri)
           (assoc :undigested undigested-uri)))))
+
+(defn write-asset [asset]
+  (let [f (->> asset
+               :digested
+               path/uri->adrf
+               (io/file (settings/serving-asset-root)))]
+    (io/make-parents f)
+    (spit f (:content asset))
+    (:digested asset)))

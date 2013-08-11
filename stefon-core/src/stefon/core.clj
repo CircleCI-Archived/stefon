@@ -14,26 +14,20 @@
             [stefon.asset.static :as static]
             [stefon.precompile :as precompile]
             [stefon.util :refer (inspect wrap-inspect)]
+            [clojure.java.io :as io]
             [ring.util.response :as response]
-            [ring.middleware.file      :refer (wrap-file)]
+            [ring.middleware.file :refer (wrap-file)]
             [ring.middleware.file-info :refer (wrap-file-info)]
             [stefon.middleware.expires :refer (wrap-file-expires-never wrap-expires-never)]
-            [stefon.middleware.mime    :refer (wrap-stefon-mime-types)]))
+            [stefon.middleware.mime :refer (wrap-stefon-mime-types)]))
 
 
 (defn find-or-build-asset [adrf]
   (if-let [asset (mem/cache-get adrf)]
     asset
-    (when-let [asset (asset/build adrf)]
+    (when-let [asset (asset/build-asset adrf)]
       (mem/cache-set! asset)
       asset)))
-
-(defn wrap-cache [app]
-  (fn [req]
-    (if-let [asset (mem/cache-get (:uri req))]
-      (response/response (mem/file-from-asset asset))
-      (app req))))
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Entry points
@@ -46,7 +40,7 @@
                        "cs" "text/javascript"})
 
 
-(defn link-to-asset [adrf & [options]]
+(defn link-to-asset [adrf options]
   "path should start under assets and not contain a leading slash
 ex. (link-to-asset \"javascripts/app.js\") => \"/assets/javascripts/app-12345678901234567890123456789012.js\""
   (settings/with-options options
@@ -57,20 +51,13 @@ ex. (link-to-asset \"javascripts/app.js\") => \"/assets/javascripts/app-12345678
    either loading the data from the cache directory, rendering a new resource and
    returning that, or passing on the request to the previously existing request
    handlers in the pipeline."
-  [app & [options]]
+  [app options]
   (settings/with-options options
-    (if (settings/production?)
-      (-> app
-          ;; serve directly from disk, never from memory
-          (wrap-file (settings/precompile-root))
-          (wrap-file-expires-never (settings/precompile-root))
-          (wrap-file-info known-mime-types)
-          wrap-stefon-mime-types)
-      (-> app
-          wrap-cache ;; serve directly from memory
-          wrap-expires-never
-          (wrap-file-info known-mime-types)
-          wrap-stefon-mime-types))))
+    (-> app
+        (wrap-file (settings/serving-root))
+        (wrap-file-expires-never (settings/serving-root))
+        (wrap-file-info known-mime-types)
+        wrap-stefon-mime-types)))
 
 (defn precompile [options] ;; lein stefon-precompile uses this name
   (precompile/precompile options))
