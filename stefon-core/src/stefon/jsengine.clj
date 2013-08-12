@@ -1,8 +1,9 @@
 (ns stefon.jsengine
-  (:require [stefon.settings :as settings]
-            [clj-time.core :as time]
+  (:require [clj-time.core :as time]
             [clj-time.coerce :as time-coerce]
             [clojure.java.io :as io]
+            [stefon.settings :as settings]
+            [stefon.digest :as digest]
             [stefon.pools :as pools]
             [stefon.v8 :as v8]
             [stefon.util :refer (dump)]))
@@ -31,7 +32,7 @@
 (defn- run-compiler [pool preloads fn-name filename content]
   (try
     (let [file (io/file filename)
-          content (String. content "UTF-8")
+          content (digest/->str content)
           absolute (.getAbsolutePath file)]
       (v8/with-scope pool preloads
         (v8/call fn-name [content absolute filename])))

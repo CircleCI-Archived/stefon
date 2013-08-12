@@ -23,3 +23,9 @@
       str
       (.getBytes "UTF-8")
       digest))
+
+
+(defn ->str [content]
+  (if  (string? content)
+    content
+    (String. content "UTF-8")))
