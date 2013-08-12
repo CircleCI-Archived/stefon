@@ -9,12 +9,12 @@
 
 (deftest wrap-cache-works-with-wrap-file-info
   (let [dev-asset (h/asset "test.js" {:asset-roots ["test/fixtures/middleware/resources/assets"]
-                                      :cache-mode :development})
+                                      :mode :development})
 
         prod-asset (h/asset "test.js "{:asset-roots ["test/fixtures/middleware/resources/assets"]
                                        :precompiles ["test.js"]
                                        :serving-root "test/fixtures/middleware/public"
-                                       :cache-mode :production})]
+                                       :mode :production})]
 
 
     (is dev-asset)
