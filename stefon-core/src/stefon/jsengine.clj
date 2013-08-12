@@ -4,7 +4,8 @@
             [clj-time.coerce :as time-coerce]
             [clojure.java.io :as io]
             [stefon.pools :as pools]
-            [stefon.v8 :as v8]))
+            [stefon.v8 :as v8]
+            [stefon.util :refer (dump)]))
 
 (def memoized (atom {}))
 (defn- memoize-file [filename f]
@@ -27,7 +28,7 @@
         new-content))))
 
 ;; TODO: take an asset to avoid slurping here
-(defn- run-compiler [pool preloads fn-name content filename]
+(defn- run-compiler [pool preloads fn-name filename content]
   (try
     (let [file (io/file filename)
           content (String. content "UTF-8")
@@ -47,4 +48,4 @@
   (let [pool (pools/make-pool)]
     (fn [filename content]
       (memoize-file filename
-                    #(run-compiler pool preloads fn-name content filename)))))
+                    #(run-compiler pool preloads fn-name filename content)))))
