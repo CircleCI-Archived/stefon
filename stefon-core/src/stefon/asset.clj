@@ -60,28 +60,37 @@
     (write-to-disk f (:content asset))
     (:digested asset)))
 
+(defn split [filename]
+  "split around the last '."
+  (let [index (.lastIndexOf filename ".")]
+    [(.substring filename 0 index) (.substring filename (+ 1 index))]))
 
+(defn name [filename]
+  (-> filename split first))
+
+(defn extension [filename]
+  (-> filename split second))
+
+;; TODO there is a way to skip stages too, if they've been precompiled
+;; TODO: md5 source + options
+;; TODO: check-disk cache
 (defn apply-pipeline [file content]
-  (let  [name (fs/name file)
-         ext (fs/extension file)
-         precompiler (get @types ext)]
-    ;; TODO there is a way to skip stages too, if they've been precompiled
-    (if ext
+  (let [name (name file)
+        ext (extension file)
+        precompiler (get @types ext)]
+    (if precompiler
       (do
-        ;; TODO: md5 source + options
-        ;; TODO: check-disk
         (infof "[%10s] %s -> %s" ext file name)
-        (apply-pipeline name (precompiler content)))
-      (do
-        [file ext content]))))
+        (apply-pipeline name (precompiler file content)))
+      [file content])))
 
 (defn compile
-  "returns [content filename]"
+  "returns [file content]"
   [adrf]
-   (->> adrf
-        find-file
-        read-file
-        (apply-pipeline (fs/file adrf))))
+  (->> adrf
+       find-file
+       read-file
+       (apply-pipeline adrf)))
 
 (defn build [adrf]
   (let [[undigested content] (compile adrf)

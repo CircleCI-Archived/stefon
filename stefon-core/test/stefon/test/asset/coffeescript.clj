@@ -1,15 +1,16 @@
 (ns stefon.test.asset.coffeescript
   (:require [stefon.asset :as asset]
+            [stefon.asset.coffeescript]
             [stefon.settings :as settings]
+            [stefon.util :refer (dump)]
             [stefon.test.helpers :as h])
   (:use clojure.test))
 
-(defn test-expected [root file expected]
+(defn test-expected [root file expected-file expected]
   (settings/with-options {:asset-roots [root]}
-    (is (= expected
-            (-> file
-                asset/compile
-                first)))))
+    (let [[result-file content] (-> file asset/compile)]
+      (is (= expected content))
+      (is (= expected-file result-file)))))
 
 (defn test-syntax [root file expecteds]
   (settings/with-options {:asset-roots [root]}
@@ -24,6 +25,7 @@
 (deftest test-coffeescript
   (test-expected "test/fixtures/assets"
                  "javascripts/test.js.coffee"
+                 "javascripts/test.js"
                  "(function() {\n\n  (function(param) {\n    return alert(\"x\");\n  });\n\n}).call(this);\n")
 
   (test-syntax "test/fixtures/assets"
