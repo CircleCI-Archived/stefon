@@ -16,9 +16,9 @@
 (deftest test-basic
   (h/test-expected "test/fixtures/assets"
                    "javascripts/basic.hamlc"
-                   "javascripts/basic"
-                   (wrap "basic"
-                         "<!DOCTYPE html>\\n<html>\\n  <head>\\n    <title>\\n      Title\\n    </title>\\n  </head>\\n  <body>\\n    <h1>\\n      Header\\n    </h1>\\n  </body>\\n</html>")))
+                   "/assets/javascripts/basic"
+                   [(wrap "basic"
+                          "<!DOCTYPE html>\\n<html>\\n  <head>\\n    <title>\\n      Title\\n    </title>\\n  </head>\\n  <body>\\n    <h1>\\n      Header\\n    </h1>\\n  </body>\\n</html>")]))
 
 ;; (deftest bad-haml-syntax
 ;;   (h/test-syntax "test/fixtures/assets"

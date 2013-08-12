@@ -3,25 +3,27 @@
             [clojure.java.io :as io]
             [stefon.settings :as settings]
             [stefon.asset :as asset]
-            [stefon.asset.stefon :as stefon])
+            [stefon.path :as path]
+            [stefon.asset.stefon :as stefon]
+            [stefon.util :refer (dump)])
   (:use [clojure.test]))
 
-(defn all [filename]
+(defn all [adrf]
   (let [root "test/fixtures/assets"]
     (settings/with-options {:asset-roots [root]}
-      (let [file (io/file root filename)]
-        (stefon/stefon-files (.getPath file) (asset/read-file file))))))
+      (let [file (io/file root adrf)]
+        (stefon/stefon-files root adrf (asset/read-file file))))))
 
 (deftest test-stefon-files
-  (let [files (all "javascripts/stefon.js.stefon")]
-    (is (h/contains-file? files "test/fixtures/assets/javascripts/app.js"))
-    (is (h/contains-file? files "test/fixtures/assets/javascripts/lib/framework.js"))
-    (is (not (h/contains-file? files "test/fixtures/assets/javascripts/lib")))
-    (is (h/contains-file? files "test/fixtures/assets/javascripts/lib/dquery.js"))
-    (is (h/contains-file? files "test/fixtures/assets/javascripts/models/feature.js"))
+  (let [files (dump (all "javascripts/stefon.js.stefon"))]
+    (is (h/contains-file? files "javascripts/app.js"))
+    (is (h/contains-file? files "javascripts/lib/framework.js"))
+    (is (not (h/contains-file? files "javascripts/lib")))
+    (is (h/contains-file? files "javascripts/lib/dquery.js"))
+    (is (h/contains-file? files "javascripts/models/feature.js"))
 
     (testing "load javascript file with same name as directory to be loaded"
-      (is (h/contains-file? files "test/fixtures/assets/javascripts/lib.js")))))
+      (is (h/contains-file? files "javascripts/lib.js")))))
 
 (deftest test-directories-are-sorted
   (let [path "test/fixtures/assets/javascripts/sorted/"
@@ -42,7 +44,7 @@
   (h/test-expected
    "test/fixtures/assets"
    "javascripts/stefon.js.stefon"
-   "javascripts/basic"
+   "/assets/javascripts/stefon.js"
    [
     ;; relative file path
     "var file = \"/app.js\""
@@ -74,23 +76,27 @@
 
 (deftest test-nested-directories
   (let [files (all "javascripts/nested-dirs.js.stefon")]
-    (is (h/contains-file? files "test/fixtures/assets/javascripts/nested-dirs/nested1/a.js"))
-    (is (h/contains-file? files "test/fixtures/assets/javascripts/nested-dirs/nested1/b.js"))
-    (is (h/contains-file? files "test/fixtures/assets/javascripts/nested-dirs/nested2/c.js"))))
+    (is (h/contains-file? files "javascripts/nested-dirs/nested1/a.js"))
+    (is (h/contains-file? files "javascripts/nested-dirs/nested1/b.js"))
+    (is (h/contains-file? files "javascripts/nested-dirs/nested2/c.js"))))
 
 (deftest test-error-on-missing-file
-  (let [filename "test/fixtures/assets/javascripts/missing_test/missing.stefon"]
+  (let [root "test/fixtures/assets"
+        adrf "javascripts/missing_test/missing.stefon"
+        filename (path/adrf->filename root adrf)]
     (try
-      (stefon/stefon-files filename (asset/read-file filename))
+      (stefon/stefon-files root adrf (asset/read-file filename))
       (is false) ; shouldnt hit
       (catch Exception e
         (is (h/has-text? (.toString e) (str "Could not find some-file-which-doesnt-exist.js from " filename)))))))
 
 (deftest test-files-named-same-as-dir
   ;; test for incorrect behaviour. When a dir A should contain a file A but doesn't, stefon returned the dir instead of the file.
-  (let [filename "test/fixtures/assets/javascripts/missing_test/missing-in-dir.stefon"]
+  (let [root "test/fixtures/assets"
+        adrf "javascripts/missing_test/missing-in-dir.stefon"
+        filename (path/adrf->filename root adrf)]
     (try
-      (stefon/stefon-files filename (asset/read-file filename))
+      (stefon/stefon-files root adrf (asset/read-file filename))
       (is false) ; shouldnt hit
       (catch Exception e
         (is (h/has-text? (.toString e) (str "Could not find missing_test from " filename)))))))

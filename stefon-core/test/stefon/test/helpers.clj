@@ -2,22 +2,22 @@
   (:require [stefon.settings :as settings]
             [stefon.core :as core]
             [stefon.asset :as asset]
+            [stefon.digest :as digest]
             [stefon.precompile :as precompile]
             [stefon.util :refer (dump)]
-            [clojure.java.io :as io]
             [ring.mock.request :as request]
+            [clojure.java.io :as io]
             [clojure.test :refer (is)]))
 
 (defn contains-file? [seq filename]
   (->> seq
-       (filter #(= (.getCanonicalPath %)
-                   (-> filename io/file .getCanonicalPath)))
+       (filter #(= % filename))
        count
        pos?))
 
 (defn contains-file-containing? [seq substr]
   (->> seq
-       (filter #(.contains (-> % .getCanonicalPath) substr))
+       (filter #(.contains % substr))
        count
        pos?))
 
@@ -32,19 +32,19 @@
 
 (defn asset [undigested {:as opts :keys [mode]}]
   (let [app (fn [req] (throw (Exception. "should never be reached")))
-        digested (if (= mode :production)
-                   (-> opts precompile/precompile first)
-                   (core/link-to-asset undigested opts))
+        digested (dump (if (= (dump mode) :production)
+                         (-> opts precompile/precompile first)
+                         (core/link-to-asset (dump undigested) opts)))
         pipeline (core/asset-pipeline app opts)]
     (pipeline (request/request :get digested))))
 
 
-(defn test-expected [root file expected-file [expecteds]]
+(defn test-expected [root file expected-file expecteds]
   (settings/with-options {:asset-roots [root]}
-    (let [[result-file content] (-> file asset/compile)
-          content (if (string? content) content (String. content "UTF-8"))]
+    (let [[result-file content] (-> file asset/compile dump)
+          content (digest/->str content)]
       (doseq [expected expecteds]
-        (is (.contains content expected)))
+        (is (.contains (dump content) expected)))
       (is (= expected-file result-file)))))
 
 

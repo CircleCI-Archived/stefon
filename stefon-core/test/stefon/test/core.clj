@@ -15,7 +15,7 @@
     (let [opts {:mode :development :asset-roots ["test/fixtures/assets"]}]
       (is (thrown? java.io.FileNotFoundException (core/link-to-asset "javascripts/dontfindme.js" opts)))
       (is (= "/assets/javascripts/app-895a9f207aea908554d644c9bd160d5f.js" (core/link-to-asset "javascripts/app.js" opts)))
-      (is (= "/assets/javascripts/stefon-666c63fb74055817612e2bc3c0d3713b.js" (core/link-to-asset "javascripts/stefon.js.stefon" opts)))
+      (is (= "/assets/javascripts/stefon-6868bd553a8415ab038c471609ec9b90.js" (core/link-to-asset "javascripts/stefon.js.stefon" opts)))
 
       (testing "file previously generated"
         (manifest/clear!)
@@ -50,7 +50,7 @@
              (core/link-to-asset "javascripts/app.js" opts)))
       (is (= "/assets/images/Elsa-445866c6257dfd01886f4d7968181f14.jpg"
              (core/link-to-asset "images/Elsa.jpg" opts)))
-      (is (= "/assets/javascripts/stefon-666c63fb74055817612e2bc3c0d3713b.js"
+      (is (= "/assets/javascripts/stefon-6868bd553a8415ab038c471609ec9b90.js"
              (core/link-to-asset "javascripts/stefon.js.stefon" opts))))))
 
 (deftest test-asset-builder

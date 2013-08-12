@@ -13,6 +13,7 @@
 
         prod-asset (h/asset "test.js "{:asset-roots ["test/fixtures/middleware/resources/assets"]
                                        :precompiles ["test.js"]
+                                       :manifest-file "manifest.json"
                                        :serving-root "test/fixtures/middleware/public"
                                        :mode :production})]
 

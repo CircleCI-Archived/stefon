@@ -6,8 +6,8 @@
 (deftest test-css
   (h/test-expected "test/fixtures/assets"
                    "stylesheets/main.css"
-                   "stylesheets/main.css"
-                   ".fancy {\n    text-decoration: blink;\n}"))
+                   "/assets/stylesheets/main.css"
+                   [".fancy {\n    text-decoration: blink;\n}"]))
 
 
 ;; (deftest test-compress-css
