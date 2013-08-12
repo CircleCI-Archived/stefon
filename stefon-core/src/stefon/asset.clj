@@ -76,23 +76,23 @@
 ;; TODO there is a way to skip stages too, if they've been precompiled
 ;; TODO: md5 source + options
 ;; TODO: check-disk cache
-(defn apply-pipeline [file content]
-  (let [name (name file)
-        ext (extension file)
+(defn apply-pipeline [filename content]
+  (let [name (name filename)
+        ext (extension filename)
         precompiler (get @types ext)]
     (if precompiler
       (do
-        (infof "[%10s] %s -> %s" ext file name)
-        (apply-pipeline name (precompiler file content)))
-      [file content])))
+        (infof "[%10s] %s -> %s" ext filename name)
+        (apply-pipeline name (precompiler filename content)))
+      [filename content])))
 
 (defn compile
   "returns [file content]"
   [adrf]
-  (->> adrf
-       find-file
-       read-file
-       (apply-pipeline adrf)))
+  (when-let [abs (find-file adrf)]
+    (->> abs
+         read-file
+         (apply-pipeline abs))))
 
 (defn build [adrf]
   (let [[undigested content] (compile adrf)
