@@ -1,6 +1,5 @@
 (ns stefon.test.asset.javascript
   (:require [stefon.test.helpers :as h]
-            [stefon.asset.coffeescript]
             [stefon.util :refer (dump)])
   (:use clojure.test))
 
@@ -9,3 +8,15 @@
                    "javascripts/app.js"
                    "javascripts/app.js"
                    "var file = \"/app.js\"\n"))
+
+;; (deftest test-compress-js
+;;   (testing "valid javascript"
+;;     (let [uncompressed-js " var foo = 'bar'; "
+;;           asset (Js. "filename.js" uncompressed-js)]
+;;       (is (= "var foo=\"bar\";" (asset/compress asset)))))
+
+;;   (testing "with compile errors"
+;;     (let [uncompressed-with-errors "var foo = [1, 2, 3, ];"
+;;           asset (Js. "haz-errors.js" uncompressed-with-errors)]
+;;       (settings/with-options {:compress true :log-level :quiet}
+;;         (is (= uncompressed-with-errors (asset/compress asset)))))))
