@@ -15,7 +15,7 @@
         (stefon/stefon-files root adrf (asset/read-file file))))))
 
 (deftest test-stefon-files
-  (let [files (dump (all "javascripts/stefon.js.stefon"))]
+  (let [files (all "javascripts/stefon.js.stefon")]
     (is (h/contains-file? files "javascripts/app.js"))
     (is (h/contains-file? files "javascripts/lib/framework.js"))
     (is (not (h/contains-file? files "javascripts/lib")))
@@ -26,16 +26,17 @@
       (is (h/contains-file? files "javascripts/lib.js")))))
 
 (deftest test-directories-are-sorted
-  (let [path "test/fixtures/assets/javascripts/sorted/"
+  (let [root "test/fixtures/assets"
+        path "javascripts/sorted/"
         filename (str path "stefon.js.stefon")
-        subdir (str path "subdir")
-        files (stefon/stefon-files filename (-> filename io/file asset/read-file))]
+        subdir (str root "/" path "subdir")
+        files (stefon/stefon-files root filename (-> (io/file root filename) asset/read-file))]
     ;; To ensure this test is actually effective, we added enough files to have
     ;; a high degree of certainty that its sorted on Linux. We also chose files
     ;; which sort differently on than in clojure (OSX sorts alphabetically, but
     ;; is case-insensitive, so below E.js will be in the middle of the list on
     ;; OSX, but at the front when sorted)
-    (is (= (map #(.getName %) files)
+    (is (= (map #(-> % io/file .getName) files)
            (seq ["E.js" "a.js" "b.js" "c.js" "d.js" "f.js"
                  "g.js" "h.js" "i.js" "j.js" "k.js" "l.js"
                  "m.js" "n.js"])))))
