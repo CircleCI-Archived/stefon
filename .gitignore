@@ -3,3 +3,4 @@
 /stefon-core/.lein-repl-history
 /stefon-core/test/precompile-cache/
 /stefon-core/test/fixtures/middleware/public/assets/
+/stefon-core/manifest.json
