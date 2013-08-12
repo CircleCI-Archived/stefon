@@ -23,8 +23,8 @@
 
 (defn save! []
   (-> @mapping
-      (#(json/generate-string % {:pretty true}))
-      (spit (settings/manifest-file))))
+      (json/generate-string {:pretty true})
+      (#(spit (settings/manifest-file) %))))
 
 (defn load! []
   (->> (settings/manifest-file)
