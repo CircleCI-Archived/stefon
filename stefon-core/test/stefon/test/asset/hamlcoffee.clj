@@ -1,7 +1,7 @@
 (ns stefon.test.asset.hamlcoffee
-  (:require [clojure.java.io :as io]
+  (:require [stefon.test.helpers :as h]
             [stefon.asset.hamlcoffee :as hc]
-            [stefon.test.helpers :as h])
+            [stefon.util :refer (dump)])
   (:use clojure.test))
 
 (defn wrap [name output]
@@ -13,46 +13,25 @@
        output
        "\");\n      return $o.join(\"\\n\");\n    }).call(context);\n  };\n\n}).call(this);\n"))
 
-(deftest test-preprocess-hamlcoffee
-  (testing "basic hamlc file"
-    (is (= (wrap "basic"  "<!DOCTYPE html>\\n<html>\\n  <head>\\n    <title>\\n      Title\\n    </title>\\n  </head>\\n  <body>\\n    <h1>\\n      Header\\n    </h1>\\n  </body>\\n</html>")
-           (hc/preprocess-hamlcoffee
-            (io/file "test/fixtures/assets/javascripts/basic.hamlc"))))))
+(deftest test-basic
+  (h/test-expected "test/fixtures/assets"
+                   "javascripts/basic.hamlc"
+                   "javascripts/basic"
+                   (wrap "basic"
+                         "<!DOCTYPE html>\\n<html>\\n  <head>\\n    <title>\\n      Title\\n    </title>\\n  </head>\\n  <body>\\n    <h1>\\n      Header\\n    </h1>\\n  </body>\\n</html>")))
 
-(deftest test-caching
-  (testing "we get the same result when there are caches"
-    (is (= (hc/preprocess-hamlcoffee
-            (io/file "test/fixtures/assets/javascripts/basic.hamlc"))
-           (hc/preprocess-hamlcoffee
-            (io/file "test/fixtures/assets/javascripts/basic.hamlc"))
-           (hc/preprocess-hamlcoffee
-            (io/file "test/fixtures/assets/javascripts/basic.hamlc"))
-           (hc/preprocess-hamlcoffee
-            (io/file "test/fixtures/assets/javascripts/basic.hamlc"))))))
+;; (deftest bad-haml-syntax
+;;   (h/test-syntax "test/fixtures/assets"
+;;                  "javascripts/badhaml1.hamlc"
+;;                  ["ERROR: Syntax Error on line 1"]))
 
-  ;; (testing "file with surround and succeed"
-  ;;   (is (= "TODO"
-  ;;          (preprocess-hamlcoffee
-  ;;           (io/file "test/fixtures/assets/javascripts/with-partials.hamlc")))))
+;;   (is (has-text?
+;;        (preprocess-hamlcoffee
+;;         (io/file "test/fixtures/assets/javascripts/badhaml2.hamlc"))
+;;        "@import \"includeme.less\"")))
 
-;; (testing "file with coffeescript"
-  ;;   (is (= "TODO"
-  ;;          (preprocess-hamlcoffee
-  ;;           (io/file "test/fixtures/assets/javascripts/with-coffee.hamlc")))))
-
-  ;; (testing "bad haml syntax"
-  ;;   (is (has-text?
-  ;;        (preprocess-hamlcoffee
-  ;;         (io/file "test/fixtures/assets/javascripts/badhaml1.hamlc"))
-  ;;        "ERROR: Syntax Error on line 1"))
-
-  ;;   (is (has-text?
-  ;;        (preprocess-hamlcoffee
-  ;;         (io/file "test/fixtures/assets/javascripts/badhaml2.hamlc"))
-  ;;        "@import \"includeme.less\"")))
-
-  ;; (testing "bad coffee syntax"
-  ;;   (is (has-text?
-  ;;        (preprocess-hamlcoffee
-  ;;         (io/file "test/fixtures/assets/javascripts/badcoffee.hamlc"))
-  ;;        "@import \"includeme.less\""))))
+;; (testing "bad coffee syntax"
+;;   (is (has-text?
+;;        (preprocess-hamlcoffee
+;;         (io/file "test/fixtures/assets/javascripts/badcoffee.hamlc"))
+;;        "@import \"includeme.less\""))))
