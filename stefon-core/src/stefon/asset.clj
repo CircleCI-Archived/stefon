@@ -63,7 +63,9 @@
 (defn split [filename]
   "split around the last '."
   (let [index (.lastIndexOf filename ".")]
-    [(.substring filename 0 index) (.substring filename (+ 1 index))]))
+    (if (pos? index)
+      [(.substring filename 0 index) (.substring filename (+ 1 index))]
+      [filename ""])))
 
 (defn name [filename]
   (-> filename split first))
