@@ -29,7 +29,7 @@
 (defn test-expected [root file expected-file expected]
   (settings/with-options {:asset-roots [root]}
     (let [[result-file content] (-> file asset/compile)
-          content (if (isa? String content) content (String. content "UTF-8"))]
+          content (if (string? content) content (String. content "UTF-8"))]
       (is (= expected (dump content)))
       (is (= expected-file result-file)))))
 
