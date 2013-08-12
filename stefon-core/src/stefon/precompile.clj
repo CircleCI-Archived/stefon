@@ -32,7 +32,8 @@
   (settings/with-options options
     (delete-dir (settings/serving-asset-root))
     (-> (settings/serving-asset-root) io/file .mkdirs)
-    (doall
-     (for [filename (settings/precompiles)]
-       (asset/build filename)))
-    (manifest/save!)))
+    (let [result (doall
+                  (for [filename (settings/precompiles)]
+                    (asset/build filename)))]
+      (manifest/save!)
+      result)))
