@@ -32,19 +32,19 @@
 
 (defn asset [undigested {:as opts :keys [mode]}]
   (let [app (fn [req] (throw (Exception. "should never be reached")))
-        digested (dump (if (= (dump mode) :production)
-                         (-> opts precompile/precompile first)
-                         (core/link-to-asset (dump undigested) opts)))
+        digested (if (= mode :production)
+                   (-> opts precompile/precompile first)
+                   (core/link-to-asset undigested opts))
         pipeline (core/asset-pipeline app opts)]
     (pipeline (request/request :get digested))))
 
 
 (defn test-expected [root file expected-file expecteds]
   (settings/with-options {:asset-roots [root]}
-    (let [[result-file content] (-> file asset/compile dump)
+    (let [[result-file content] (-> file asset/compile)
           content (digest/->str content)]
       (doseq [expected expecteds]
-        (is (.contains (dump content) expected)))
+        (is (.contains content expected)))
       (is (= expected-file result-file)))))
 
 
