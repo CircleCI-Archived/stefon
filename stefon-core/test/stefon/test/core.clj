@@ -50,8 +50,8 @@
              (core/link-to-asset "javascripts/app.js" opts)))
       (is (= "/assets/images/Elsa-445866c6257dfd01886f4d7968181f14.jpg"
              (core/link-to-asset "images/Elsa.jpg" opts)))
-      (is (= "/assets/javascripts/manifest-e4e2f0c89cbafc0ee96ea6e355f8ec4f.js.stefon"
-             (core/link-to-asset "javascripts/manifest.js.stefon" opts))))))
+      (is (= "/assets/javascripts/stefon-666c63fb74055817612e2bc3c0d3713b.js"
+             (core/link-to-asset "javascripts/stefon.js.stefon" opts))))))
 
 (deftest test-asset-builder
   (settings/with-options {:asset-roots ["test/fixtures/assets"]}
@@ -80,5 +80,5 @@
       (is (= "text/javascript" (mime-req "javascripts/app.js")))
       (is (= "image/jpeg"      (mime-req "images/stefon.jpeg")))
       (is (= "text/css"        (mime-req "stylesheets/main.css")))
-      (is (= "text/css"        (mime-req "stylesheets/basic.less")))
-      (is (= "text/javascript" (mime-req "javascripts/manifest.js.stefon"))))))
+      (is (= "text/css"        (mime-req "stylesheets/basic.css.less")))
+      (is (= "text/javascript" (mime-req "javascripts/stefon.js.stefon"))))))
