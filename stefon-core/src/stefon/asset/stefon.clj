@@ -2,6 +2,7 @@
   (:require [clojure.java.io :as io]
             [clojure.string :as s]
             [stefon.asset :as asset]
+            [stefon.digest :as digest]
             [stefon.util :refer (dump)])
   (:use [stefon.util :only [slurp-into string-builder]])
   (:import [java.io ByteArrayInputStream InputStreamReader PushbackReader FileNotFoundException]))
@@ -16,7 +17,7 @@ namely a vector or list of file names or directory paths."
   "return a sequence of files specified by the given stefon."
   [root adrf content]
   (let [parent (.getParent (io/file root adrf))
-        root-length (-> root io/file .getCanonicalPath .length)]
+        root-length (-> root io/file .getCanonicalPath .length inc)]
     (->> content
          load-stefon
          (map (fn [asset-filename]
@@ -34,9 +35,10 @@ namely a vector or list of file names or directory paths."
 (defn compile-stefon [root adrf content]
   (let [builder (string-builder)]
     (doseq [sf (stefon-files root adrf content)]
-      (let [content (asset/read-file (io/file root adrf))]
+      (let [content (asset/read-file (io/file root sf))]
         (->> (asset/apply-pipeline root sf content)
-             first ; content
+             second ; content
+             digest/->str
              (.append builder))))
     (.toString builder)))
 
