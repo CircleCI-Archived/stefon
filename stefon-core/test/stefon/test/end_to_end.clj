@@ -2,28 +2,19 @@
   (:require [stefon.core :as core]
             [stefon.settings :as settings]
             [stefon.path :as path]
-            [stefon.cache.memory :as mem]
+            [stefon.helpers :as h]
             [stefon.precompile :as precompile]
             [stefon.util :refer (inspect)])
-  (:use clojure.test
-        ring.mock.request))
-
-(defn asset [undigested {:as opts :keys [cache-mode]}]
-  (let [app (fn [req] (throw (Exception. "should never be reached")))
-        digested (if (= cache-mode :production)
-                   (-> opts precompile/precompile first)
-                   (core/link-to-asset undigested opts))
-        pipeline (core/asset-pipeline app opts)]
-    (pipeline (request :get digested))))
+  (:use clojure.test))
 
 (deftest wrap-cache-works-with-wrap-file-info
-  (let [dev-asset (asset "test.js" {:asset-roots ["test/fixtures/middleware/resources/assets"]
-                                    :cache-mode :development})
+  (let [dev-asset (h/asset "test.js" {:asset-roots ["test/fixtures/middleware/resources/assets"]
+                                      :cache-mode :development})
 
-        prod-asset (asset "test.js "{:asset-roots ["test/fixtures/middleware/resources/assets"]
-                                     :precompiles ["test.js"]
-                                     :serving-root "test/fixtures/middleware/public"
-                                     :cache-mode :production})]
+        prod-asset (h/asset "test.js "{:asset-roots ["test/fixtures/middleware/resources/assets"]
+                                       :precompiles ["test.js"]
+                                       :serving-root "test/fixtures/middleware/public"
+                                       :cache-mode :production})]
 
 
     (is dev-asset)
