@@ -46,6 +46,6 @@
 
 (defn compiler [fn-name preloads]
   (let [pool (pools/make-pool)]
-    (fn [filename content]
-      (memoize-file filename
-                    #(run-compiler pool preloads fn-name filename content)))))
+    (fn [root adrf content]
+      (memoize-file adrf
+                    #(run-compiler pool preloads fn-name adrf content)))))

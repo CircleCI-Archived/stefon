@@ -14,28 +14,30 @@ namely a vector or list of file names or directory paths."
 
 (defn stefon-files
   "return a sequence of files specified by the given stefon."
-  [filename content]
-  (let [parent (.getParent (dump (io/file filename)))]
+  [root adrf content]
+  (let [parent (.getParent (io/file root adrf))
+        root-length (-> root io/file .getCanonicalPath .length)]
     (->> content
          load-stefon
          (map (fn [asset-filename]
                 (-> (io/file parent asset-filename)
                     file-seq)))
          flatten
-         (map #(.getCanonicalFile %))
-         (sort-by #(.getPath %))
          (remove #(or (re-matches #".*\.swp$" (.getPath %)) ; vim swap files
                       (re-matches #".*/\.#[^\/]+$" (.getPath %)) ; emacs swap files
                       (re-matches #".*/\.DS_Store$" (.getPath %)) ; OSX
-                      (.isDirectory %))))))
+                      (.isDirectory %)))
+         (map #(.getCanonicalPath %))
+         sort
+         (map #(.substring % root-length)))))
 
-(defn compile-stefon [filename content]
+(defn compile-stefon [root adrf content]
   (let [builder (string-builder)]
-    (doseq [sf (stefon-files filename content)]
-      (->> sf
-           asset/apply-pipeline
-           first ; content
-           (.append builder)))
+    (doseq [sf (stefon-files root adrf content)]
+      (let [content (asset/read-file (io/file root adrf))]
+        (->> (asset/apply-pipeline root sf content)
+             first ; content
+             (.append builder))))
     (.toString builder)))
 
 (asset/register "stefon" compile-stefon)

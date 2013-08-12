@@ -58,7 +58,7 @@
   "Adds a digest to the path based on the content"
   [path content]
   {:pre [(not (digest-path? path))]
-   :post [(digest-path? %)]}
+   :post [(digest-path? (dump %))]}
   (if-let [[_ fname ext] (split-path path)]
     (str fname "-" (digest/digest content) "." ext)
     (str path "-" (digest/digest content))))
@@ -75,7 +75,7 @@
 (defn adrf->filename [root adrf]
   (str root "/" adrf))
 
-(defn find-file [filename]
-  (let [file (io/file filename)]
+(defn find-file [root adrf]
+  (let [file (io/file (adrf->filename root adrf))]
     (when (.exists file)
-      file)))
+      [root adrf])))

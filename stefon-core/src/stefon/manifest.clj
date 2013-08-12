@@ -9,10 +9,10 @@
 
 (defn set!
   [undigested digested]
-  {:pre [(path/asset-uri? undigested)
+  {:pre [(not (path/asset-uri? undigested))
          (path/asset-uri? digested)
          (path/digest-path? digested)
-         (not (path/digest-path? digested))]}
+         (not (path/digest-path? undigested))]}
   (swap! mapping assoc undigested digested))
 
 (defn fetch [adrf]

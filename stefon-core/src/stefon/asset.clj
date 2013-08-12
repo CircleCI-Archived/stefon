@@ -26,8 +26,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn find-file [adrf]
-  {:post [(or (nil? %) (-> % io/file .exists))]}
-  (or (reduce #(or %1 (path/find-file (path/adrf->filename %2 adrf)))
+  (or (reduce #(or %1 (path/find-file %2 adrf))
                nil
                (settings/asset-roots))
       (throw (java.io.FileNotFoundException.
@@ -51,14 +50,13 @@
   (with-open [out (java.io.FileOutputStream. file)]
     (.write out content)))
 
-(defn write-asset [asset]
-  (let [f (->> asset
-               :digested
+(defn write-asset [content digested]
+  (let [f (->> digested
                path/uri->adrf
                (io/file (settings/serving-asset-root)))]
     (io/make-parents f)
-    (write-to-disk f (:content asset))
-    (:digested asset)))
+    (write-to-disk f content)
+    digested))
 
 (defn split [filename]
   "split around the last '."
@@ -76,27 +74,29 @@
 ;; TODO there is a way to skip stages too, if they've been precompiled
 ;; TODO: md5 source + options
 ;; TODO: check-disk cache
-(defn apply-pipeline [filename content]
-  (let [name (name filename)
-        ext (extension filename)
+(defn apply-pipeline [root adrf content]
+  (let [name (name adrf)
+        ext (extension adrf)
         precompiler (get @types ext)]
     (if precompiler
       (do
-        (infof "[%10s] %s -> %s" ext filename name)
-        (apply-pipeline name (precompiler filename content)))
-      [filename content])))
+        (infof "[%10s] %s -> %s" ext adrf name)
+        (apply-pipeline root name (precompiler root adrf content)))
+      [(path/adrf->uri adrf) content])))
 
 (defn compile
-  "returns [file content]"
+  "returns [filename content]"
   [adrf]
-  (when-let [abs (find-file adrf)]
-    (->> abs
-         read-file
-         (apply-pipeline abs))))
+  (when-let [found (find-file adrf)]
+    (let [[root adrf] found]
+      (->> (io/file root adrf)
+           read-file
+           (apply-pipeline root adrf)))))
 
 (defn build [adrf]
   (let [[undigested content] (compile adrf)
         digested (path/path->digested undigested content)]
     (infof "%s -> %s" adrf digested)
-    (manifest/set! undigested digested)
-    (write-asset content digested)))
+    (manifest/set! adrf digested)
+    (write-asset content digested)
+    digested))

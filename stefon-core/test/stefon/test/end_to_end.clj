@@ -2,9 +2,9 @@
   (:require [stefon.core :as core]
             [stefon.settings :as settings]
             [stefon.path :as path]
-            [stefon.helpers :as h]
+            [stefon.test.helpers :as h]
             [stefon.precompile :as precompile]
-            [stefon.util :refer (inspect)])
+            [stefon.util :refer (dump)])
   (:use clojure.test))
 
 (deftest wrap-cache-works-with-wrap-file-info

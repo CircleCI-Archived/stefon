@@ -15,7 +15,15 @@
     (let [opts {:mode :development :asset-roots ["test/fixtures/assets"]}]
       (is (thrown? java.io.FileNotFoundException (core/link-to-asset "javascripts/dontfindme.js" opts)))
       (is (= "/assets/javascripts/app-895a9f207aea908554d644c9bd160d5f.js" (core/link-to-asset "javascripts/app.js" opts)))
-      (is (= "/assets/javascripts/manifest-e4e2f0c89cbafc0ee96ea6e355f8ec4f.js.stefon" (core/link-to-asset "javascripts/manifest.js.stefon" opts)))))
+      (is (= "/assets/javascripts/stefon-666c63fb74055817612e2bc3c0d3713b.js" (core/link-to-asset "javascripts/stefon.js.stefon" opts)))
+
+      (testing "file previously generated"
+        (manifest/clear!)
+        (manifest/set! "javascripts/app.js"
+                       "/assets/javascripts/app-12345678901234567890af1234567890.js")
+
+        (is (= "/assets/javascripts/app-895a9f207aea908554d644c9bd160d5f.js"
+               (core/link-to-asset "javascripts/app.js" opts))))))
 
   (testing "production mode"
     (let [opts {:mode :production
@@ -25,10 +33,11 @@
         (is (path/digest-path? (core/link-to-asset "javascripts/app.js" opts))))
 
       (testing "file previously generated"
-        (manifest/clear! "/assets/javascripts/app.js"
-                         "/assets/javascripts/app-12345678901234567890af1234567890.js")
+        (manifest/clear!)
+        (manifest/set! "javascripts/app.js"
+                       "/assets/javascripts/app-12345678901234567890af1234567890.js")
 
-        (is (= "/assets/javascripts/app-895a9f207aea908554d644c9bd160d5f.js"
+        (is (= "/assets/javascripts/app-12345678901234567890af1234567890.js"
                (core/link-to-asset "javascripts/app.js" opts)))))))
 
 
@@ -49,12 +58,12 @@
     (testing "sha'd file paths"
       (manifest/clear!)
       (is (= "/assets/javascripts/app-895a9f207aea908554d644c9bd160d5f.js"
-             (-> "javascripts/app.js" asset/build-asset :digested)))
+             (-> "javascripts/app.js" asset/build)))
       (.delete (io/file "test/fixtures/asset-cache/assets/javascripts/app-895a9f207aea908554d644c9bd160d5f.js")))
 
     (testing "binary files"
       (is (= "/assets/images/stefon-102c15cd1a2dfbe24b8a5f12f2671fc8.jpeg"
-             (-> "images/stefon.jpeg" asset/build-asset :digested)))
+             (-> "images/stefon.jpeg" asset/build)))
       (.delete (io/file "test/fixtures/asset-cache/assets/images/stefon-102c15cd1a2dfbe24b8a5f12f2671fc8.jpeg")))))
 
 (deftest test-asset-pipeline

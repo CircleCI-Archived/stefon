@@ -1,6 +1,6 @@
 (ns stefon.test.path
   (:require [stefon.path :refer :all]
-            [stefon.util :refer (inspect)]
+            [stefon.util :refer (dump)]
             [stefon.digest :as digest]
             [stefon.settings :as settings]
             [clojure.java.io :as io]

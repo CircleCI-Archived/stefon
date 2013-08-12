@@ -1,5 +1,5 @@
 (ns stefon.test.settings
-  (:require [stefon.util :refer (inspect)]
+  (:require [stefon.util :refer (dump)]
             [stefon.settings :as settings]
             [stefon.core :as core]
             [clojure.test :refer :all]))
