@@ -8,7 +8,7 @@
 (deftest test-coffeescript
   (h/test-expected "test/fixtures/assets"
                    "javascripts/test.js.coffee"
-                   "/assets/javascripts/test.js"
+                   "/assets/javascripts/test-b74cbe00c1ccfd87aab2f921da52fe4a.js"
                    ["(function() {\n\n  (function(param) {\n    return alert(\"x\");\n  });\n\n}).call(this);\n"]))
 
 (deftest test-syntax-error

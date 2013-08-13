@@ -36,11 +36,15 @@
 
 (defn split-digested-path [path]
   "return [match path digest extenstion], or nil"
-  (re-matches #"^(.+)-([\da-f]{32})\.((\w|\.)+)$" path))
+  (if (pos? (.indexOf path "."))
+    (re-matches #"^(.+)-([\da-f]{32})\.((\w|\.)+)$" path)
+    (re-matches #"^(.+)-([\da-f]{32})$" path)))
 
 (defn split-path [path]
   "returns [match path extenston] or nil"
-  (re-matches #"^(.+?)\.((\w|\.)+)$" path))
+  (if (pos? (.indexOf path "."))
+    (re-matches #"^(.+?)\.((\w|\.)+)$" path)
+    [path path nil]))
 
 (defn digest-path? [path]
   (-> path split-digested-path boolean))
@@ -50,18 +54,21 @@
   [path]
   {:pre [(digest-path? path)]
    :post [(not (digest-path? %))]}
-  (if-let [[_ fname digest ext] (split-digested-path path)]
-    (str fname "." ext)
-    path))
+  (let [[_ fname digest ext] (split-digested-path path)]
+    (if ext
+      (str fname "." ext)
+      fname)))
 
 (defn path->digested
   "Adds a digest to the path based on the content"
   [path content]
   {:pre [(not (digest-path? path))]
    :post [(digest-path? %)]}
-  (if-let [[_ fname ext] (split-path path)]
-    (str fname "-" (digest/digest content) "." ext)
-    (str path "-" (digest/digest content))))
+  (let [[_ fname ext] (split-path path)
+        digested (digest/digest content)]
+    (if ext
+      (str fname "-" digested "." ext)
+      (str path "-" digested))))
 
 (defn uri->adrf [uri]
   {:pre [(asset-uri? uri)]

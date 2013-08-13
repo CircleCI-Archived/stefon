@@ -11,8 +11,7 @@
 (defn all [adrf]
   (let [root "test/fixtures/assets"]
     (settings/with-options {:asset-roots [root]}
-      (let [file (io/file root adrf)]
-        (stefon/stefon-files root adrf (asset/read-file file))))))
+      (stefon/stefon-files root adrf (asset/read-file root adrf)))))
 
 (deftest test-stefon-files
   (let [files (all "javascripts/stefon.js.stefon")]
@@ -28,9 +27,9 @@
 (deftest test-directories-are-sorted
   (let [root "test/fixtures/assets"
         path "javascripts/sorted/"
-        filename (str path "stefon.js.stefon")
+        adrf (str path "stefon.js.stefon")
         subdir (str root "/" path "subdir")
-        files (stefon/stefon-files root filename (-> (io/file root filename) asset/read-file))]
+        files (stefon/stefon-files root adrf (asset/read-file root adrf))]
     ;; To ensure this test is actually effective, we added enough files to have
     ;; a high degree of certainty that its sorted on Linux. We also chose files
     ;; which sort differently on than in clojure (OSX sorts alphabetically, but
@@ -45,7 +44,7 @@
   (h/test-expected
    "test/fixtures/assets"
    "javascripts/stefon.js.stefon"
-   "/assets/javascripts/stefon.js"
+   "/assets/javascripts/stefon-c7c551452007a4899c29e86e84b9ff89.js"
    [
     ;; relative file path
     "var file = \"/app.js\""
@@ -83,10 +82,9 @@
 
 (deftest test-error-on-missing-file
   (let [root "test/fixtures/assets"
-        adrf "javascripts/missing_test/missing.stefon"
-        filename (path/adrf->filename root adrf)]
+        adrf "javascripts/missing_test/missing.stefon"]
     (try
-      (stefon/compile-stefon root adrf (asset/read-file filename))
+      (stefon/compile-stefon root adrf (asset/read-file root adrf))
       (is false) ; shouldnt hit
       (catch Exception e
         (is (h/has-text? (.toString e) (str "Couldn't find javascripts/missing_test/some-file-which-doesnt-exist.js in " root)))))))
@@ -94,10 +92,9 @@
 (deftest test-files-named-same-as-dir
   ;; test for incorrect behaviour. When a dir A should contain a file A but doesn't, stefon returned the dir instead of the file.
   (let [root "test/fixtures/assets"
-        adrf "javascripts/missing_test/missing-in-dir.stefon"
-        filename (path/adrf->filename root adrf)]
+        adrf "javascripts/missing_test/missing-in-dir.stefon"]
     (try
-      (stefon/compile-stefon root adrf (asset/read-file filename))
+      (stefon/compile-stefon root adrf (asset/read-file root adrf))
       (is false) ; shouldnt hit
       (catch Exception e
         (is (h/has-text? (.toString e) (str "Couldn't find javascripts/missing_test/missing_test in " root)))))))

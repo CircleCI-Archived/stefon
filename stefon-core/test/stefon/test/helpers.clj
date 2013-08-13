@@ -41,7 +41,7 @@
 
 (defn test-expected [root file expected-file expecteds & {:keys [debug]}]
   (settings/with-options {:asset-roots [root]}
-    (let [[result-file content] (-> file asset/compile)
+    (let [[result-file content] (-> file asset/build)
           content (digest/->str content)]
       (doseq [expected expecteds]
         (when debug
@@ -54,7 +54,7 @@
 (defn test-syntax [root file expecteds]
   (settings/with-options {:asset-roots [root]}
     (try
-      (asset/compile file)
+      (asset/build file)
       (is false)
       (catch Exception e
         (doseq [expected expecteds]

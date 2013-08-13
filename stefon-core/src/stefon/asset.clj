@@ -34,11 +34,14 @@
                (settings/asset-roots))
       (file-not-found (settings/asset-roots) adrf)))
 
-(defn read-file [file]
-  (with-open [in (-> file FileInputStream. BufferedInputStream.)]
-    (let [buf (-> file .length byte-array)]
-      (.read in buf)
-      buf)))
+(defn read-file [root adrf]
+  (let [file (io/file root adrf)]
+    (when-not (.exists file)
+      (file-not-found root adrf))
+    (with-open [in (-> file FileInputStream. BufferedInputStream.)]
+      (let [buf (-> file .length byte-array)]
+        (.read in buf)
+        buf))))
 
 (derive (class (make-array Byte/TYPE 0)) ::bytes)
 (derive java.lang.String ::string-like)
@@ -85,21 +88,24 @@
       (let [content (precompiler root adrf content)]
         (printf "%-9s %s -> %s\n" (str "[" ext "]") adrf name)
         (apply-pipeline root name content))
-      [(path/adrf->uri adrf) content])))
+      [adrf content])))
 
 
 (defn compile
-  "returns [filename content]"
-  [adrf]
-  (if-let [found (find-file adrf)]
-    (let [[root adrf] found]
-      (->> (io/file root adrf)
-           read-file
-           (apply-pipeline root adrf)))))
+  "returns [digested content]"
+  [root adrf]
+  (let [[name content] (->> (read-file root adrf)
+                            (apply-pipeline root adrf))
+        digested (-> name
+                     path/adrf->uri
+                     (path/path->digested content))]
+    [digested content]))
 
 (defn build [adrf]
-  (let [[undigested content] (compile adrf)
-        digested (path/path->digested undigested content)]
+  (let [found (find-file adrf)
+        [digested content] (apply compile found)]
+    ;; TODO not all built assets will need to be written. They will for
+    ;; asset-path and asset-uri. They won't for data-uri, less, and stefon files.
     (manifest/set! adrf digested)
     (write-asset content digested)
     [digested content]))

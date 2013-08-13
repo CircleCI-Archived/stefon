@@ -6,17 +6,19 @@
             [stefon.util :refer (dump)])
   (:import org.apache.commons.codec.binary.Base64))
 
-(defn process [line fn-name callback]
+(declare process-all)
+
+(defn process [line fn-name build-fn callback-fn]
   (let [p1 (re-pattern (str "(.*)\\(" fn-name " '(.*?)'\\)(.*)"))
         p2 (re-pattern (str "(.*)\\(" fn-name " \"(.*?)\"\\)(.*)"))
         match (or (re-matches p1 line) (re-matches p2 line))]
 
     (if match
       (let [[_ start adrf end] match
-            [d c] (asset/build adrf)]
+            [d c] (build-fn adrf)]
 
         ;; recurse to handle multiple entries per line
-        (process (str start (callback d c) end) fn-name callback))
+        (process-all (str start (callback-fn d c) end)))
       line)))
 
 (defn base64 [data]
@@ -27,9 +29,9 @@
 
 (defn process-all [line]
   (-> line
-      (process "asset-path" (fn [d c] d))
-      (process "asset-uri" (fn [d c] (str "url(\"" d "\")")))
-      (process "data-uri" data-uri)))
+      (process "asset-path" asset/build (fn [d c] d))
+      (process "asset-uri" asset/build (fn [d c] (str "url(\"" d "\")")))
+      (process "data-uri" asset/compile data-uri)))
 
 (defn compile [root adrf content]
   (->> content

@@ -16,7 +16,7 @@
 (deftest test-basic
   (h/test-expected "test/fixtures/assets"
                    "javascripts/basic.hamlc"
-                   "/assets/javascripts/basic"
+                   "/assets/javascripts/basic-07da6554d81caef2b995caf987514c35"
                    [(wrap "basic"
                           "<!DOCTYPE html>\\n<html>\\n  <head>\\n    <title>\\n      Title\\n    </title>\\n  </head>\\n  <body>\\n    <h1>\\n      Header\\n    </h1>\\n  </body>\\n</html>")]))
 

@@ -6,7 +6,7 @@
 (deftest test-css
   (h/test-expected "test/fixtures/assets"
                    "stylesheets/main.css"
-                   "/assets/stylesheets/main.css"
+                   "/assets/stylesheets/main-b63a41ce251e2b1ffbb5c6aa32d984d2.css"
                    [".fancy {\n    text-decoration: blink;\n}"]))
 
 
