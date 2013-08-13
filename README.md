@@ -42,7 +42,9 @@ Or if you use noir
 + [LESS CSS](http://lesscss.org/) (*.css.less)
 + [CoffeeScript](http://jashkenas.github.com/coffee-script/) (*.js.coffee)
 + [HamlCoffee](https://github.com/9elements/haml-coffee) (*.js.hamlc)
-+ Minifying JS using the Google Closure compiler (*.closure.js)
+- Minifying JS using the Google Closure compiler (*.closure.js - coming soon)
+- Minifying CSS using by removing whitespace (coming soon)
+- Replacing asset references (calls to data-uri, etc) with the relevant information about the asset (.*.ar)
 
 Concatenation of assets is handled by a Stefon manifest file.
 A manifest is a file whose name ends in .stefon and whose contents are
@@ -103,6 +105,9 @@ The following configuration options are available.
 ;; Set to :production to serve precompiled files, or when running `lein stefon-precompile`
 :mode :development
 
+;; Where the result of the precompile should be stored. Might be good to keep it out of the web root.
+; manifest-file "manifest.json"
+
 ;; When precompiling, the list of files to precompile. Can take regexes, which will attempt to match all files in the asset roots
 :precompiles ["./assets/myfile.js.stefon"]
 ```
@@ -136,7 +141,7 @@ With contributions [by many other](https://github.com/circleci/stefon/graphs/con
 * dev mode mirrors production mode exactly
 * the timestamp thing is gone
 * Many settings removed, we're down to :asset-roots, :serving-root, :mode, manifest-file and :precompiles
-- The pipeline is now truly a pipeline, supporting more than one transformation per file
++ The pipeline is now truly a pipeline, supporting more than one transformation per file
 - Add data-uri support
 - allow options to be passed to each compiler
 - support different versions of each language
