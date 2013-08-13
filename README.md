@@ -46,6 +46,8 @@ Or if you use noir
 - Minifying CSS using by removing whitespace (coming soon)
 - Replacing asset references (calls to data-uri, etc) with the relevant information about the asset (.*.ar)
 
+#### .stefon files
+
 Concatenation of assets is handled by a Stefon manifest file.
 A manifest is a file whose name ends in .stefon and whose contents are
 a clojure vector of file names / directories to concatenate.
@@ -64,6 +66,24 @@ For example, a file named `assets/javascripts/app.js.stefon` with the following 
 Stefon would look for base.js in the same directory, and then concatenate each file from the lib and models directories.
 It concatenated all files in order.
 Directory contents are concatenated in alphabetical order.
+
+#### .less files
+
+Less files have one caveat at present: they read their imports directly from file system, without going through stefon.
+That means that you can't use .less.ref files.
+As a workaround, make your root file a .ref.less file, and do the assetifying after less compilation has finished.
+
+#### .ref files
+
+To refer to other assets from your asset, use a .ref file.
+This allows you to write functions that reference other assets, such as data-uri and asset-path.
+If you're familiar with sprockets, this is similar to how you might use a .erb file.
+
+There are some sharp edges here, at the moment.
+In particular, there is no dependency tracking, and caching compiled assets is very naive.
+This means if you refer to asset A from asset B, and then change A, B won't actually change unless you restart your program.
+
+
 
 
 ### Linkage
@@ -142,7 +162,7 @@ With contributions [by many other](https://github.com/circleci/stefon/graphs/con
 * the timestamp thing is gone
 * Many settings removed, we're down to :asset-roots, :serving-root, :mode, manifest-file and :precompiles
 + The pipeline is now truly a pipeline, supporting more than one transformation per file
-- Add data-uri support
++ Add data-uri support
 - allow options to be passed to each compiler
 - support different versions of each language
 - add image compression
