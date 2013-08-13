@@ -86,10 +86,10 @@
         adrf "javascripts/missing_test/missing.stefon"
         filename (path/adrf->filename root adrf)]
     (try
-      (stefon/stefon-files root adrf (asset/read-file filename))
+      (stefon/compile-stefon root adrf (asset/read-file filename))
       (is false) ; shouldnt hit
       (catch Exception e
-        (is (h/has-text? (.toString e) (str "Could not find some-file-which-doesnt-exist.js from " filename)))))))
+        (is (h/has-text? (.toString e) (str "Couldn't find javascripts/missing_test/some-file-which-doesnt-exist.js in " root)))))))
 
 (deftest test-files-named-same-as-dir
   ;; test for incorrect behaviour. When a dir A should contain a file A but doesn't, stefon returned the dir instead of the file.
@@ -97,7 +97,7 @@
         adrf "javascripts/missing_test/missing-in-dir.stefon"
         filename (path/adrf->filename root adrf)]
     (try
-      (stefon/stefon-files root adrf (asset/read-file filename))
+      (stefon/compile-stefon root adrf (asset/read-file filename))
       (is false) ; shouldnt hit
       (catch Exception e
-        (is (h/has-text? (.toString e) (str "Could not find missing_test from " filename)))))))
+        (is (h/has-text? (.toString e) (str "Couldn't find javascripts/missing_test/missing_test in " root)))))))
