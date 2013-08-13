@@ -35,7 +35,10 @@ namely a vector or list of file names or directory paths."
 (defn compile-stefon [root adrf content]
   (let [builder (string-builder)]
     (doseq [sf (stefon-files root adrf content)]
-      (let [content (asset/read-file (io/file root sf))]
+      (let [file (io/file root sf)
+            _ (when-not (.exists file)
+                (asset/file-not-found root sf))
+            content (asset/read-file file)]
         (->> (asset/apply-pipeline root sf content)
              second ; content
              digest/->str
