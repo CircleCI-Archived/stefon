@@ -34,6 +34,6 @@
     (-> (settings/serving-asset-root) io/file .mkdirs)
     (let [result (doall
                   (for [filename (settings/precompiles)]
-                    (asset/build filename)))]
+                    (-> filename asset/build first)))]
       (manifest/save!)
       result)))

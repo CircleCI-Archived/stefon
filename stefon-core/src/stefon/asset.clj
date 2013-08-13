@@ -76,6 +76,7 @@
 ;; TODO there is a way to skip stages too, if they've been precompiled
 ;; TODO: md5 source + options
 ;; TODO: check-disk cache
+;; track dependencies
 (defn apply-pipeline [root adrf content]
   (let [name (name adrf)
         ext (extension adrf)
@@ -101,4 +102,4 @@
         digested (path/path->digested undigested content)]
     (manifest/set! adrf digested)
     (write-asset content digested)
-    digested))
+    [digested content]))
