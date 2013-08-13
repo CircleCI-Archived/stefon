@@ -1,6 +1,9 @@
 (ns stefon.test.asset.reference
   (:require [stefon.test.helpers :as h]
-            [stefon.asset.reference]
+            [stefon.asset.reference :as ref]
+            [stefon.asset.less :as less]
+            [stefon.asset.hamlcoffee :as hamlc]
+            [stefon.asset.coffeescript :as coffee]
             [stefon.util :refer (dump)])
   (:use clojure.test))
 
@@ -21,7 +24,8 @@
   (h/test-expected "test/fixtures/reference/assets"
                    "javascripts/testuri.css.less.ref"
                    "/assets/javascripts/testuri.css"
-                   [".outer {\n  background-image: url(/assets/images/image-102c15cd1a2dfbe24b8a5f12f2671fc8.jpeg);\n}"]))
+                   [".outer {\n  background-image: url(\"/assets/images/image-102c15cd1a2dfbe24b8a5f12f2671fc8.jpeg\");\n}"]
+                   :debug true))
 
 (deftest test-data-uri-in-js
   (h/test-expected "test/fixtures/reference/assets"
