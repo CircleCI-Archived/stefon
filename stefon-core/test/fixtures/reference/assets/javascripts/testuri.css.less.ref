@@ -1,0 +1,3 @@
+.outer {
+  background-image: (asset-uri "images/image.jpeg");
+}

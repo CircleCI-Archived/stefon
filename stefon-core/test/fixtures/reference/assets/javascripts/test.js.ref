@@ -1,0 +1,1 @@
+var x = "asset-path('image.jpeg')";
