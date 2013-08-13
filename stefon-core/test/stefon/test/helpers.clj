@@ -39,11 +39,14 @@
     (pipeline (request/request :get digested))))
 
 
-(defn test-expected [root file expected-file expecteds]
+(defn test-expected [root file expected-file expecteds & {:keys [debug]}]
   (settings/with-options {:asset-roots [root]}
     (let [[result-file content] (-> file asset/compile)
           content (digest/->str content)]
       (doseq [expected expecteds]
+        (when debug
+          (dump content)
+          (dump expected))
         (is (.contains content expected)))
       (is (= expected-file result-file)))))
 
