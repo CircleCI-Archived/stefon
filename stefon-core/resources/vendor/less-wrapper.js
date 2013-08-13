@@ -38,12 +38,6 @@ function compileLess(input, name, shouldCompress) {
     startingName = name;
     path = name.split("/");path.pop();path=path.join("/")
 
-    var input = readFile(name);
-
-    if (!input) {
-        print('lesscss: couldn\'t open file ' + name);
-    }
-
     var result;
     try {
         var parser = new less.Parser();
