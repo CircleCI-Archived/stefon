@@ -58,12 +58,12 @@
     (testing "sha'd file paths"
       (manifest/clear!)
       (is (= "/assets/javascripts/app-895a9f207aea908554d644c9bd160d5f.js"
-             (-> "javascripts/app.js" asset/build first)))
+             (-> "javascripts/app.js" asset/find-and-compile-and-save first)))
       (.delete (io/file "test/fixtures/asset-cache/assets/javascripts/app-895a9f207aea908554d644c9bd160d5f.js")))
 
     (testing "binary files"
       (is (= "/assets/images/stefon-102c15cd1a2dfbe24b8a5f12f2671fc8.jpeg"
-             (-> "images/stefon.jpeg" asset/build first)))
+             (-> "images/stefon.jpeg" asset/find-and-compile-and-save first)))
       (.delete (io/file "test/fixtures/asset-cache/assets/images/stefon-102c15cd1a2dfbe24b8a5f12f2671fc8.jpeg")))))
 
 (deftest test-asset-pipeline

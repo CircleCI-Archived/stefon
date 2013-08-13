@@ -86,7 +86,6 @@
         precompiler (get @types ext)]
     (if precompiler
       (let [content (precompiler root adrf content)]
-        (printf "%-9s %s -> %s\n" (str "[" ext "]") adrf name)
         (apply-pipeline root name content))
       [adrf content])))
 
@@ -101,11 +100,15 @@
                      (path/path->digested content))]
     [digested content]))
 
-(defn build [adrf]
-  (let [found (find-file adrf)
-        [digested content] (apply compile found)]
-    ;; TODO not all built assets will need to be written. They will for
-    ;; asset-path and asset-uri. They won't for data-uri, less, and stefon files.
+(defn compile-and-save [root adrf]
+  "compiles, saves to the serving dir, and returns [digested content]"
+  (let [[digested content] (compile root adrf)]
     (manifest/set! adrf digested)
     (write-asset content digested)
     [digested content]))
+
+;; TODO: currently, it's hard for assets to link to assets in other roots
+(defn find-and-compile-and-save [adrf]
+  (->> adrf
+       find-file
+       (apply compile-and-save)))

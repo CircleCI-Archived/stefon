@@ -34,7 +34,7 @@
 ex. (link-to-asset \"javascripts/app.js\") => \"/assets/javascripts/app-12345678901234567890123456789012.js\""
   (settings/with-options options
     (when-not (settings/production?)
-      (asset/build adrf))
+      (asset/find-and-compile-and-save adrf))
     (manifest/fetch adrf)))
 
 (defn asset-pipeline
