@@ -6,7 +6,7 @@
 (deftest test-javascript
   (h/test-expected "test/fixtures/assets"
                    "javascripts/app.js"
-                   "/assets/javascripts/app.js"
+                   "/assets/javascripts/app-895a9f207aea908554d644c9bd160d5f.js"
                    ["var file = \"/app.js\"\n"]))
 
 ;; (deftest test-compress-js
