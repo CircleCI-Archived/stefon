@@ -45,11 +45,14 @@
         (.setStackTrace e new-st-array)
         (throw e)))))
 
+(defn memoizable? [adrf]
+  (->> adrf (re-find #"\.ref$") nil?))
+
 (defn compiler [fn-name preloads & {:as args :keys [memoize] :or {memoize true}}]
   (let [pool (pools/make-pool)]
     (fn [root adrf content]
       (let [abs (.getCanonicalPath (io/file root adrf))
             f #(run-compiler pool preloads fn-name abs content)]
-        (if memoize
+        (if (and memoize (memoizable? adrf))
           (memoize-file abs f)
           (f))))))
