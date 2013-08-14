@@ -1,0 +1,1 @@
+x = "(asset-path "some-file-which-doesnt-exit.jpeg")"
