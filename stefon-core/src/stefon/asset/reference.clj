@@ -22,10 +22,12 @@
       line)))
 
 (defn base64 [data]
-  (Base64/encodeBase64String (.getBytes data "UTF-8")))
+  (if (string? data)
+    (Base64/encodeBase64String (.getBytes data "UTF-8"))
+    (Base64/encodeBase64String data)))
 
 (defn data-uri [d c]
-  (str "data:" (mime/ext-mime-type d) ";base64," (base64 d)))
+  (str "data:" (mime/ext-mime-type d) ";base64," (base64 c)))
 
 (defn process-all [line root]
   (-> line

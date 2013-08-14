@@ -1,0 +1,4 @@
+x = "(data-uri "images/image.jpeg")"
+x = '(data-uri "images/image.jpeg")'
+x = "(data-uri 'images/image.jpeg')"
+x = '(data-uri 'images/image.jpeg')'

@@ -27,8 +27,11 @@
 (deftest test-data-uri-in-js
   (h/test-expected "test/fixtures/reference/assets"
                    "javascripts/testdata.js.coffee.ref"
-                   "/assets/javascripts/testdata-.js"
-                   ["var x = \"/assets/image-somedigest.jpeg\";"]))
+                   "/assets/javascripts/testdata-dc68eed2f0ed1b90b175acc1e337cff6.js"
+                   ["x = \"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAk"
+                    "x = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAk"
+                    "x = \"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAk"
+                    "x = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAk"]))
 
 (deftest test-multiple-per-line
   (h/test-expected "test/fixtures/reference/assets"
