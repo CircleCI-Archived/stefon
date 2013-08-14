@@ -15,18 +15,11 @@
             [ring.util.response :as response]
             [ring.middleware.file :refer (wrap-file)]
             [ring.middleware.file-info :refer (wrap-file-info)]
-            [stefon.middleware.expires :refer (wrap-file-expires-never wrap-expires-never)]
-            [stefon.middleware.mime :refer (wrap-stefon-mime-types)]))
+            [stefon.middleware.expires :refer (wrap-file-expires-never wrap-expires-never)]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Entry points
 ;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(def known-mime-types {:hbs "text/javascript"
-                       "less" "text/css"
-                       "hamlc" "text/javascript"
-                       "coffee" "text/javascript"
-                       "cs" "text/javascript"})
 
 
 (defn link-to-asset [adrf options]
@@ -47,13 +40,12 @@ ex. (link-to-asset \"javascripts/app.js\") => \"/assets/javascripts/app-12345678
   (settings/with-options options
     (-> app
         (wrap-file (settings/serving-root))
-        (wrap-file-expires-never (settings/serving-root))
-        (wrap-file-info known-mime-types)
-        wrap-stefon-mime-types)))
+        (wrap-file-expires-never (settings/serving-root)))))
 
 (defn precompile [options] ;; lein stefon-precompile uses this name
   (precompile/precompile options))
 
 (defn init [options]
   (settings/with-options options
-    (precompile/load-precompiled-assets)))
+    (when (settings/production?)
+      (precompile/load-precompiled-assets))))
