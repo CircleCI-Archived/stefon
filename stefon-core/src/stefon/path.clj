@@ -36,13 +36,13 @@
 
 (defn split-digested-path [path]
   "return [match path digest extenstion], or nil"
-  (if (pos? (.indexOf path "."))
+  (if (re-find #"[^\.]\.[^\.]" path)
     (re-matches #"^(.+)-([\da-f]{32})\.((\w|\.)+)$" path)
     (re-matches #"^(.+)-([\da-f]{32})$" path)))
 
 (defn split-path [path]
   "returns [match path extenston] or nil"
-  (if (pos? (.indexOf path "."))
+  (if (re-find #"[^\.]\.[^\.]" path)
     (re-matches #"^(.+?)\.((\w|\.)+)$" path)
     [path path nil]))
 

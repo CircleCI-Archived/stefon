@@ -17,19 +17,19 @@ namely a vector or list of file names or directory paths."
   "return a sequence of files specified by the given stefon."
   [root adrf content]
   (let [parent (.getParent (io/file root adrf))
-        root-length (-> root io/file .getCanonicalPath .length inc)]
+        root-length (-> root .length inc)]
     (->> content
          load-stefon
          (map (fn [asset-filename]
-                (-> (io/file parent asset-filename)
-                    file-seq)))
+                (->> (io/file parent asset-filename)
+                     file-seq
+                     (sort-by #(.getCanonicalPath %)))))
          flatten
          (remove #(or (re-matches #".*\.swp$" (.getPath %)) ; vim swap files
                       (re-matches #".*/\.#[^\/]+$" (.getPath %)) ; emacs swap files
                       (re-matches #".*/\.DS_Store$" (.getPath %)) ; OSX
                       (.isDirectory %)))
-         (map #(.getCanonicalPath %))
-         sort
+         (map #(.getPath %))
          (map #(.substring % root-length)))))
 
 (defn compile-stefon [root adrf content]

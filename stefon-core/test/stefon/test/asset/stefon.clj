@@ -98,3 +98,9 @@
       (is false) ; shouldnt hit
       (catch Exception e
         (is (h/has-text? (.toString e) (str "Couldn't find javascripts/missing_test/missing_test in " root)))))))
+
+(deftest link-outside-the-asset-root-works
+  (let [root "test/fixtures/assets"
+        adrf "javascripts/outside_link.stefon"]
+    (is (= (stefon/compile-stefon root adrf (asset/read-file root adrf))
+           "x = \"y\";\n"))))
