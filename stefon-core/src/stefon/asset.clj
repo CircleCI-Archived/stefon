@@ -3,7 +3,6 @@
             [clojure.string :as cstr]
             [clojure.java.io :as io]
             [clojure.tools.logging :refer (infof)]
-            [me.raynes.fs :as fs]
             [stefon.settings :as settings]
             [stefon.jsengine :as jsengine]
             [stefon.manifest :as manifest]

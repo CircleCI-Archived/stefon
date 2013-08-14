@@ -169,7 +169,6 @@ With contributions [by many other](https://github.com/circleci/stefon/graphs/con
 - add more compressors
 - add more languages, esp markdown
 - cdn support (port from circleci)
-- rewrite diretory functions to use raynes/fs
 - use proper tmp dirs
 - drop support for lein1, lein2 only
 
