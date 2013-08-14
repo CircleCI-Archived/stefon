@@ -7,6 +7,7 @@
             [stefon.asset.coffeescript :as coffee]
             [stefon.asset.hamlcoffee :as hamlc]
             [stefon.asset.less :as less]
+            [stefon.asset.reference :as ref]
             [stefon.asset.stefon :as stefon]
             [stefon.manifest :as manifest]
             [stefon.precompile :as precompile]
@@ -26,9 +27,9 @@
   "path should start under assets and not contain a leading slash
 ex. (link-to-asset \"javascripts/app.js\") => \"/assets/javascripts/app-12345678901234567890123456789012.js\""
   (settings/with-options options
-    (when-not (settings/production?)
-      (asset/find-and-compile-and-save adrf))
-    (manifest/fetch adrf)))
+    (if (settings/production?)
+      (manifest/fetch adrf)
+      (-> adrf asset/find-and-compile-and-save first))))
 
 (defn asset-pipeline
   "Construct the Stefon asset pipeline depending on the :cache-mode option, eventually
