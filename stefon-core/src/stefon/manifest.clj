@@ -21,13 +21,19 @@
 (defn clear! []
   (reset! mapping {}))
 
-(defn save! []
+(defn save-string []
   (-> @mapping
-      (json/generate-string {:pretty true})
-      (#(spit (settings/manifest-file) %))))
+      (json/generate-string {:pretty true})))
+
+(defn save! []
+  (spit (settings/manifest-file) (save-string)))
+
+
+(defn load-map! [map]
+  (swap! mapping identity map))
 
 (defn load! []
-  (->> (settings/manifest-file)
-       slurp
-       json/parse-string
-       (swap! mapping identity)))
+  (-> (settings/manifest-file)
+      slurp
+      json/parse-string
+      load-map!))
