@@ -30,7 +30,7 @@
 
 
 (defn load-map! [map]
-  (swap! mapping identity map))
+  (swap! mapping (constantly map)))
 
 (defn load! []
   (-> (settings/manifest-file)
