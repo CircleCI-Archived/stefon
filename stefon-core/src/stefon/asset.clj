@@ -81,7 +81,7 @@
 ;; TODO: check-disk cache
 ;; track dependencies
 (defn apply-pipeline [root adrf content]
-  (let [name (basename adrf)
+  (let [name (base-name adrf)
         ext (extension adrf)
         precompiler (get @types ext)]
     (if precompiler
