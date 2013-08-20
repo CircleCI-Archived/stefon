@@ -1,4 +1,5 @@
 (ns stefon.asset
+  (:refer-clojure :exclude [compile])
   (:require [clj-time.core :as time]
             [clojure.string :as cstr]
             [clojure.java.io :as io]
@@ -69,7 +70,7 @@
       [(.substring filename 0 index) (.substring filename (+ 1 index))]
       [filename ""])))
 
-(defn name [filename]
+(defn base-name [filename]
   (-> filename split first))
 
 (defn extension [filename]
@@ -80,7 +81,7 @@
 ;; TODO: check-disk cache
 ;; track dependencies
 (defn apply-pipeline [root adrf content]
-  (let [name (name adrf)
+  (let [name (basename adrf)
         ext (extension adrf)
         precompiler (get @types ext)]
     (if precompiler

@@ -1,4 +1,5 @@
 (ns stefon.asset.reference
+  (:refer-clojure :exclude [compile])
   (:require [stefon.asset :as asset]
             [stefon.digest :as digest]
             [clojure.string :as str]

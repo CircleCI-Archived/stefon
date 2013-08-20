@@ -1,4 +1,5 @@
 (ns stefon.asset.hamlcoffee
+  (:refer-clojure :exclude [compile])
   (:require [stefon.jsengine :as jsengine]
             [stefon.asset :as asset]))
 
