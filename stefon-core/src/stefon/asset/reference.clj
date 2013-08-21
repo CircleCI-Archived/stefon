@@ -34,7 +34,7 @@
 
 (defn resize-image [data width height]
   (->
-   (shell/sh "bash" "-c" (inspect (format "convert - -resize %sx%s -" width height))
+   (shell/sh "bash" "-c" (format "convert - -resize %sx%s -" width height)
              :in (clojure.java.io/input-stream data)
              :out-enc :bytes)
    :out))
