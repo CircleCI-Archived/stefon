@@ -6,6 +6,7 @@
             [stefon.asset :as asset]
             [stefon.test.helpers :as h]
             [stefon.util :refer (dump)]
+            [ring.util.response :as response]
             [clojure.java.io :as io])
   (:use clojure.test
         ring.mock.request))
@@ -65,3 +66,40 @@
       (is (= "/assets/images/stefon-102c15cd1a2dfbe24b8a5f12f2671fc8.jpeg"
              (-> "images/stefon.jpeg" asset/find-and-compile-and-save first)))
       (.delete (io/file "test/fixtures/asset-cache/assets/images/stefon-102c15cd1a2dfbe24b8a5f12f2671fc8.jpeg")))))
+
+(deftest caching-and-simple-links-work-in-development
+  (let [app (fn [req] {:status 404})
+        opts {:mode :development
+              :asset-roots ["test/fixtures/assets" "test/fixtures/more_assets/assets"]}
+        pipeline (core/asset-pipeline app opts)
+        resp (fn [adrf] (-> (request :get (path/adrf->uri adrf))
+                              pipeline))
+        adrf "javascripts/app.js"]
+    (manifest/clear!)
+    (testing "checking no files"
+      (is (= {:status 404} (resp "filenotfound.js"))))
+    (testing "simple links redirect without caching"
+      (let [resp (resp adrf)]
+        (is (= 302 (:status resp)))
+        (is (= (core/link-to-asset adrf opts) (-> resp :headers (get "Location"))))
+        (is (not (-> resp :headers (get "Expires"))))))
+    (testing "digest links work and cached"
+      (let [resp (-> (request :get (core/link-to-asset adrf opts)) pipeline)]
+        (is (= 200 (:status resp)))
+        (is (-> resp :body))
+        (is (-> resp :headers (get "Expires")))))))
+
+(deftest caching-and-simple-links-in-production
+  (let [app (fn [req] {:status 404})
+        opts {:mode :production
+              :serving-root "/tmp/stefon"
+              :asset-roots ["test/fixtures/assets" "test/fixtures/more_assets/assets"]}
+        pipeline (core/asset-pipeline app opts)
+        resp (fn [adrf] (-> (request :get (path/adrf->uri adrf))
+                              pipeline))
+        adrf "javascripts/app.js"]
+    (manifest/clear!)
+    (testing "checking no files"
+      (is (= {:status 404} (resp "filenotfound.js"))))
+    (testing "simple links don't work in production"
+      (is (= {:status 404} (resp adrf))))))
