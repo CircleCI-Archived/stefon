@@ -4,8 +4,8 @@
             [stefon.asset :as asset]
             [stefon.digest :as digest]
             [stefon.util :refer (dump)])
-  (:use [stefon.util :only [slurp-into string-builder]])
-  (:import [java.io ByteArrayInputStream InputStreamReader PushbackReader FileNotFoundException]))
+  (:use [stefon.util :only [string-builder]])
+  (:import [java.io ByteArrayInputStream InputStreamReader PushbackReader]))
 
 (defn load-stefon
   "a manifest file must be a valid clojure data structure,

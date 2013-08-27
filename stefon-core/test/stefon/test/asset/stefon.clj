@@ -15,14 +15,14 @@
 
 (deftest test-stefon-files
   (let [files (all "javascripts/stefon.js.stefon")]
-    (is (h/contains-file? files "javascripts/app.js"))
+    (is (h/contains-file? files "javascripts/./app.js"))
     (is (h/contains-file? files "javascripts/lib/framework.js"))
-    (is (not (h/contains-file? files "javascripts/lib")))
-    (is (h/contains-file? files "javascripts/lib/dquery.js"))
-    (is (h/contains-file? files "javascripts/models/feature.js"))
+    (is (not (h/contains-file? files "javascripts/./lib")))
+    (is (h/contains-file? files "javascripts/./lib/dquery.js"))
+    (is (h/contains-file? files "javascripts/./models/feature.js"))
 
     (testing "load javascript file with same name as directory to be loaded"
-      (is (h/contains-file? files "javascripts/lib.js")))))
+      (is (h/contains-file? files "javascripts/./lib.js")))))
 
 (deftest test-directories-are-sorted
   (let [root "test/fixtures/assets"
@@ -44,7 +44,7 @@
   (h/test-expected
    "test/fixtures/assets"
    "javascripts/stefon.js.stefon"
-   "/assets/javascripts/stefon-c7c551452007a4899c29e86e84b9ff89.js"
+   "/assets/javascripts/stefon-e4e2f0c89cbafc0ee96ea6e355f8ec4f.js"
    [
     ;; relative file path
     "var file = \"/app.js\""
