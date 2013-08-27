@@ -7,14 +7,14 @@
 (deftest test-basic
   (h/test-expected "test/fixtures/assets"
                    "stylesheets/basic.css.less"
-                   "/assets/stylesheets/basic-2ce59c4c107d52eabb2140b11dff4bb5.css"
-                   ["#header {\n  color: #4d926f;\n}\n"]))
+                   "/assets/stylesheets/basic-2c2167c0f4a90e20413715e33b17bb82.css"
+                   ["#header{color:#4d926f;}\n"]))
 
 (deftest test-with-imports
   (h/test-expected "test/fixtures/assets"
                    "stylesheets/includes.css.less"
-                   "/assets/stylesheets/includes-36e272afbdb68b3c73951cf31e7b8f37.css"
-                   ["#includee {\n  color: white;\n}\n#includee-three {\n  color: white;\n}\n#includee-two {\n  color: white;\n}\n#includer {\n  color: black;\n}\n"]))
+                   "/assets/stylesheets/includes-b9650f9c695dc4a463e5b1c5e3643c09.css"
+                   ["#includee{color:white;}\n#includee-three{color:white;}\n#includee-two{color:white;}\n#includer{color:black;}\n"]))
 
 (deftest test-preprocess-less
   (h/test-syntax "test/fixtures/assets"
