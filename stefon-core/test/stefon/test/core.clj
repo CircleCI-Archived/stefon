@@ -15,7 +15,7 @@
     (let [opts {:mode :development :asset-roots ["test/fixtures/assets"]}]
       (is (thrown? java.io.FileNotFoundException (core/link-to-asset "javascripts/dontfindme.js" opts)))
       (is (= "/assets/javascripts/app-895a9f207aea908554d644c9bd160d5f.js" (core/link-to-asset "javascripts/app.js" opts)))
-      (is (= "/assets/javascripts/stefon-c7c551452007a4899c29e86e84b9ff89.js" (core/link-to-asset "javascripts/stefon.js.stefon" opts)))
+      (is (= "/assets/javascripts/stefon-e4e2f0c89cbafc0ee96ea6e355f8ec4f.js" (core/link-to-asset "javascripts/stefon.js.stefon" opts)))
 
       (testing "file previously generated"
         (manifest/clear!)
@@ -50,7 +50,7 @@
              (core/link-to-asset "javascripts/app.js" opts)))
       (is (= "/assets/images/Elsa-445866c6257dfd01886f4d7968181f14.jpg"
              (core/link-to-asset "images/Elsa.jpg" opts)))
-      (is (= "/assets/javascripts/stefon-c7c551452007a4899c29e86e84b9ff89.js"
+      (is (= "/assets/javascripts/stefon-e4e2f0c89cbafc0ee96ea6e355f8ec4f.js"
              (core/link-to-asset "javascripts/stefon.js.stefon" opts))))))
 
 (deftest test-asset-builder
@@ -65,20 +65,3 @@
       (is (= "/assets/images/stefon-102c15cd1a2dfbe24b8a5f12f2671fc8.jpeg"
              (-> "images/stefon.jpeg" asset/find-and-compile-and-save first)))
       (.delete (io/file "test/fixtures/asset-cache/assets/images/stefon-102c15cd1a2dfbe24b8a5f12f2671fc8.jpeg")))))
-
-(deftest test-asset-pipeline
-  (let [app (fn [req] (:uri req))
-        opts {:mode :development
-              :asset-roots ["test/fixtures/assets" "test/fixtures/more_assets/assets"]}
-        pipeline (core/asset-pipeline app opts)
-        mime-req (fn [uri] (-> (request :get (core/link-to-asset uri opts))
-                              pipeline
-                              :headers
-                              (get "Content-Type")))]
-    (testing "mime types"
-      (manifest/clear!)
-      (is (= "text/javascript" (mime-req "javascripts/app.js")))
-      (is (= "image/jpeg"      (mime-req "images/stefon.jpeg")))
-      (is (= "text/css"        (mime-req "stylesheets/main.css")))
-      (is (= "text/css"        (mime-req "stylesheets/basic.css.less")))
-      (is (= "text/javascript" (mime-req "javascripts/stefon.js.stefon"))))))
