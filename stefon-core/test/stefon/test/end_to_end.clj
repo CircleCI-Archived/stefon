@@ -7,7 +7,7 @@
             [stefon.util :refer (dump)])
   (:use clojure.test))
 
-(deftest wrap-cache-works-with-wrap-file-info
+(deftest wrap-cache-works
   (let [dev-asset (h/asset "test.js" {:asset-roots ["test/fixtures/middleware/resources/assets"]
                                       :mode :development})
 
@@ -22,15 +22,6 @@
     (is (= (-> dev-asset :status)
            (-> prod-asset :status)
            200))
-
-    (is (= (-> dev-asset :headers (get "Content-Length"))
-           (-> prod-asset :headers (get "Content-Length"))
-           "11"))
-
-    (is (= (-> dev-asset :headers (get "Content-Type"))
-           (-> prod-asset :headers (get "Content-Type"))
-           "text/javascript"))
-
     (is (= (-> prod-asset :headers (get "Expires"))
            (-> dev-asset :headers (get "Expires"))))
     (is (-> prod-asset :headers (get "Expires")))))

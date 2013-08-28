@@ -20,8 +20,8 @@
 (deftest test-asset-uri-in-css
   (h/test-expected "test/fixtures/reference/assets"
                    "javascripts/testuri.css.less.ref"
-                   "/assets/javascripts/testuri-3225068b97e200c379f366e0c9a7f50e.css"
-                   [".outer {\n  background-image: url(\"/assets/images/image-102c15cd1a2dfbe24b8a5f12f2671fc8.jpeg\");\n}\n"]))
+                   "/assets/javascripts/testuri-35e5ffbd04bbac344b9aad35e48fa782.css"
+                   [".outer{background-image:url(\"/assets/images/image-102c15cd1a2dfbe24b8a5f12f2671fc8.jpeg\");}\n"]))
 
 (deftest test-data-uri-in-js
   (h/test-expected "test/fixtures/reference/assets"
