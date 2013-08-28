@@ -11,7 +11,8 @@
                  [commons-codec "1.5"]
                  [com.google.javascript/closure-compiler "r1592"]
                  [clj-v8 "0.1.4"]
-                 [clj-v8-native "0.1.4"]]
+                 [clj-v8-native "0.1.4"]
+                 [pathetic "0.5.1"]]
   :profiles {:dev {:dependencies [[ring-mock "0.1.4"]
                                   [org.clojure/clojure "1.5.0"]
                                   [bond "0.2.5" :exclusions [org.clojure/clojure]]]}})

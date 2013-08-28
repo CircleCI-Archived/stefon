@@ -2,6 +2,7 @@
   (:require [clojure.string :as cstr]
             [clojure.core.incubator :refer (-?>)]
             [clojure.java.io :as io]
+            [pathetic.core :as pathetic]
             [stefon.settings :as settings]
             [stefon.util :refer (dump)]
             [stefon.digest :as digest]))
@@ -86,3 +87,16 @@
   (let [file (io/file (adrf->filename root adrf))]
     (when (.exists file)
       [root adrf])))
+
+(defn ->normalized
+  "Return a simplified version of `path` with redundant path segments removed"
+  [path]
+  (pathetic/normalize path))
+
+(defn relative-to
+  "Return a new path that indicates the same file-system location as `path` but
+  relative to `base-path`.
+  If either of the paths is absolute then both must be absolute."
+  [base-path path]
+  {:pre [(apply = (map pathetic/absolute-path? [base-path path]))]}
+  (pathetic/relativize base-path path))
