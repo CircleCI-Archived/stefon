@@ -92,3 +92,11 @@
   "Return a simplified version of `path` with redundant path segments removed"
   [path]
   (pathetic/normalize path))
+
+(defn relative-to
+  "Return a new path that indicates the same file-system location as `path` but
+  relative to `base-path`.
+  If either of the paths is absolute then both must be absolute."
+  [base-path path]
+  {:pre [(apply = (map pathetic/absolute-path? [base-path path]))]}
+  (pathetic/relativize base-path path))

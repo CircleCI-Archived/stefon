@@ -78,3 +78,13 @@
   (is (= (simplify-path "a/../../b") "../b"))
   (is (= (simplify-path "a/b/../../c/d") "c/d"))
   (is (= (simplify-path "../") "..")))
+
+(deftest relative-to-works
+  (is (= (relative-to "base/path" "base/path/file") "file"))
+  (is (= (relative-to "base/path" "base/path/directory/file") "directory/file"))
+  (is (= (relative-to "/base/path" "/base/path/file") "file"))
+  (is (= (relative-to "/base/path" "/base/path/directory/file") "directory/file"))
+  (is (= (relative-to "unrelated" "base/path") "../base/path"))
+  (is (= (relative-to "/unrelated" "/base/path") "../base/path"))
+  (is (thrown? AssertionError (relative-to "/absolute/path" "relative/path")))
+  (is (thrown? AssertionError (relative-to "relative/path" "/absolute/path"))))
