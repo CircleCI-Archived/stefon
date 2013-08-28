@@ -57,27 +57,27 @@
   (is (= (adrf->filename "asset-root" "some-filename") "asset-root/some-filename")))
 
 
-(deftest simplify-path-works-for-simple-paths
-  (is (= (simplify-path "") ""))
-  (is (= (simplify-path ".") "."))
-  (is (= (simplify-path "/") "/"))
-  (is (= (simplify-path "a/b/") "a/b"))
-  (is (= (simplify-path "a//b//c/d") "a/b/c/d")))
+(deftest ->normalized-works-for-simple-paths
+  (is (= (->normalized "") ""))
+  (is (= (->normalized ".") "."))
+  (is (= (->normalized "/") "/"))
+  (is (= (->normalized "a/b/") "a/b"))
+  (is (= (->normalized "a//b//c/d") "a/b/c/d")))
 
-(deftest simplify-path-removes-current-dir
-  (is (= (simplify-path "./") "."))
-  (is (= (simplify-path "./path/to/file") "path/to/file"))
-  (is (= (simplify-path "././path/to/file") "path/to/file"))
-  (is (= (simplify-path "path/./to/file") "path/to/file"))
+(deftest ->normalized-removes-current-dir
+  (is (= (->normalized "./") "."))
+  (is (= (->normalized "./path/to/file") "path/to/file"))
+  (is (= (->normalized "././path/to/file") "path/to/file"))
+  (is (= (->normalized "path/./to/file") "path/to/file"))
   ; "../" at the beginning of a path should be left alone
-  (is (= (simplify-path "../path") "../path")))
+  (is (= (->normalized "../path") "../path")))
 
-(deftest simplify-path-removes-parent-dirs
-  (is (= (simplify-path "a/../b") "b"))
-  (is (= (simplify-path "/../b") "/b"))
-  (is (= (simplify-path "a/../../b") "../b"))
-  (is (= (simplify-path "a/b/../../c/d") "c/d"))
-  (is (= (simplify-path "../") "..")))
+(deftest ->normalized-removes-parent-dirs
+  (is (= (->normalized "a/../b") "b"))
+  (is (= (->normalized "/../b") "/b"))
+  (is (= (->normalized "a/../../b") "../b"))
+  (is (= (->normalized "a/b/../../c/d") "c/d"))
+  (is (= (->normalized "../") "..")))
 
 (deftest relative-to-works
   (is (= (relative-to "base/path" "base/path/file") "file"))

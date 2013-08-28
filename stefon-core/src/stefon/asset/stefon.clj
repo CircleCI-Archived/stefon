@@ -19,7 +19,7 @@ namely a vector or list of file names or directory paths."
   [root adrf content]
   (let [parent (.getParent (io/file root adrf))
         normalize-path (comp (partial path/relative-to root)
-                             path/simplify-path
+                             path/->normalized
                              #(.getPath %))]
     (->> content
          load-stefon

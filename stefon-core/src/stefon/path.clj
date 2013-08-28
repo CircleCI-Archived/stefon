@@ -88,7 +88,7 @@
     (when (.exists file)
       [root adrf])))
 
-(defn simplify-path
+(defn ->normalized
   "Return a simplified version of `path` with redundant path segments removed"
   [path]
   (pathetic/normalize path))
