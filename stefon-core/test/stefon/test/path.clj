@@ -55,3 +55,26 @@
 
 (deftest adrf->filename-works
   (is (= (adrf->filename "asset-root" "some-filename") "asset-root/some-filename")))
+
+
+(deftest simplify-path-works-for-simple-paths
+  (is (= (simplify-path "") ""))
+  (is (= (simplify-path ".") "."))
+  (is (= (simplify-path "/") "/"))
+  (is (= (simplify-path "a/b/") "a/b"))
+  (is (= (simplify-path "a//b//c/d") "a/b/c/d")))
+
+(deftest simplify-path-removes-current-dir
+  (is (= (simplify-path "./") "."))
+  (is (= (simplify-path "./path/to/file") "path/to/file"))
+  (is (= (simplify-path "././path/to/file") "path/to/file"))
+  (is (= (simplify-path "path/./to/file") "path/to/file"))
+  ; "../" at the beginning of a path should be left alone
+  (is (= (simplify-path "../path") "../path")))
+
+(deftest simplify-path-removes-parent-dirs
+  (is (= (simplify-path "a/../b") "b"))
+  (is (= (simplify-path "/../b") "/b"))
+  (is (= (simplify-path "a/../../b") "../b"))
+  (is (= (simplify-path "a/b/../../c/d") "c/d"))
+  (is (= (simplify-path "../") "..")))

@@ -2,6 +2,7 @@
   (:require [clojure.string :as cstr]
             [clojure.core.incubator :refer (-?>)]
             [clojure.java.io :as io]
+            [pathetic.core :as pathetic]
             [stefon.settings :as settings]
             [stefon.util :refer (dump)]
             [stefon.digest :as digest]))
@@ -86,3 +87,8 @@
   (let [file (io/file (adrf->filename root adrf))]
     (when (.exists file)
       [root adrf])))
+
+(defn simplify-path
+  "Return a simplified version of `path` with redundant path segments removed"
+  [path]
+  (pathetic/normalize path))
