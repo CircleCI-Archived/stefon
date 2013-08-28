@@ -3,6 +3,7 @@
             [clojure.string :as s]
             [stefon.asset :as asset]
             [stefon.digest :as digest]
+            [stefon.path :as path]
             [stefon.util :refer (dump)])
   (:use [stefon.util :only [string-builder]])
   (:import [java.io ByteArrayInputStream InputStreamReader PushbackReader]))
@@ -17,7 +18,9 @@ namely a vector or list of file names or directory paths."
   "return a sequence of files specified by the given stefon."
   [root adrf content]
   (let [parent (.getParent (io/file root adrf))
-        root-length (-> root .length inc)]
+        normalize-path (comp (partial path/relative-to root)
+                             path/->normalized
+                             #(.getPath %))]
     (->> content
          load-stefon
          (map (fn [asset-filename]
@@ -29,8 +32,7 @@ namely a vector or list of file names or directory paths."
                       (re-matches #".*/\.#[^\/]+$" (.getPath %)) ; emacs swap files
                       (re-matches #".*/\.DS_Store$" (.getPath %)) ; OSX
                       (.isDirectory %)))
-         (map #(.getPath %))
-         (map #(.substring % root-length)))))
+         (map normalize-path))))
 
 (defn compile-stefon [root adrf content]
   (let [builder (string-builder)]
