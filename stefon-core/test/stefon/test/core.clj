@@ -70,10 +70,10 @@
 (deftest caching-and-simple-links-work-in-development
   (let [app (fn [req] {:status 404})
         opts {:mode :development
-              :asset-roots ["test/fixtures/assets" "test/fixtures/more_assets/assets"]}
+              :asset-roots ["test/fixtures/assets"]}
         pipeline (core/asset-pipeline app opts)
         resp (fn [adrf] (-> (request :get (path/adrf->uri adrf))
-                              pipeline))
+                             pipeline))
         adrf "javascripts/app.js"]
     (manifest/clear!)
     (testing "checking no files"

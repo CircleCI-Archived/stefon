@@ -32,14 +32,14 @@ ex. (link-to-asset \"javascripts/app.js\") => \"/assets/javascripts/app-12345678
       (-> adrf asset/find-and-compile-and-save first))))
 
 (defn wrap-undigested-link
-  [app production? & [opts]]
+  [app production? options]
   (fn [req]
     (if (or production?
             (-> req :uri path/asset-uri? not))
       (app req)
       (try
         (let [adrf (-> req :uri path/uri->adrf)
-              link (link-to-asset adrf opts)]
+              link (link-to-asset adrf options)]
           (response/redirect link))
         (catch java.io.FileNotFoundException e
           (app req))))))
@@ -53,7 +53,7 @@ ex. (link-to-asset \"javascripts/app.js\") => \"/assets/javascripts/app-12345678
   (settings/with-options options
     (-> (settings/serving-asset-root) io/file .mkdirs)
     (-> app
-        (wrap-undigested-link (settings/production?))
+        (wrap-undigested-link (settings/production?) options)
         (wrap-file (settings/serving-root))
         (wrap-file-expires-never (settings/serving-root)))))
 
