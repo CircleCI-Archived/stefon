@@ -3,7 +3,7 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :url "http://github.com/circleci/stefon"
-  :dependencies [[ring/ring-core "1.1.8"]
+  :dependencies [[ring/ring-core "1.2.0"]
                  [clj-time "0.4.4"]
                  [org.clojure/core.incubator "0.1.1"]
                  [org.clojure/tools.logging "0.2.3"]

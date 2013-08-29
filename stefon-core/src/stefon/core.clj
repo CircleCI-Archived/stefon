@@ -31,15 +31,29 @@ ex. (link-to-asset \"javascripts/app.js\") => \"/assets/javascripts/app-12345678
       (manifest/fetch adrf)
       (-> adrf asset/find-and-compile-and-save first))))
 
+(defn wrap-undigested-link
+  [app production? options]
+  (fn [req]
+    (if (or production?
+            (-> req :uri path/asset-uri? not))
+      (app req)
+      (try
+        (let [adrf (-> req :uri path/uri->adrf)
+              link (link-to-asset adrf options)]
+          (response/redirect link))
+        (catch java.io.FileNotFoundException e
+          (app req))))))
+
 (defn asset-pipeline
   "Construct the Stefon asset pipeline depending on the :cache-mode option, eventually
    either loading the data from the cache directory, rendering a new resource and
    returning that, or passing on the request to the previously existing request
    handlers in the pipeline."
   [app options]
-  (-> (settings/serving-asset-root) io/file .mkdirs)
   (settings/with-options options
+    (-> (settings/serving-asset-root) io/file .mkdirs)
     (-> app
+        (wrap-undigested-link (settings/production?) options)
         (wrap-file (settings/serving-root))
         (wrap-file-expires-never (settings/serving-root)))))
 

@@ -35,8 +35,9 @@
   (fn [req]
     (let [path (:uri req)]
       (if (path/asset-uri? path)
-        (if-let [resp ((file/wrap-file app root-path) req)]
+        (if-let [resp (file/file-request req root-path)]
           (res/header resp "Expires"
                       (.format (make-http-format) (Date. (+ (System/currentTimeMillis)
-                                                            (* 1000 1 365 24 60 60))))))
+                                                            (* 1000 1 365 24 60 60)))))
+          (app req))
         (app req)))))
