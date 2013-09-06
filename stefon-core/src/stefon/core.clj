@@ -23,7 +23,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-(defn link-to-asset [adrf options]
+(defn link-to-asset [adrf & [options]]
   "path should start under assets and not contain a leading slash
 ex. (link-to-asset \"javascripts/app.js\") => \"/assets/javascripts/app-12345678901234567890123456789012.js\""
   (settings/with-options options
@@ -57,7 +57,7 @@ ex. (link-to-asset \"javascripts/app.js\") => \"/assets/javascripts/app-12345678
         (wrap-file (settings/serving-root))
         (wrap-file-expires-never (settings/serving-root)))))
 
-(defn precompile [options] ;; lein stefon-precompile uses this name
+(defn precompile [& [options]] ;; lein stefon-precompile uses this name
   (precompile/precompile options))
 
 (defn init [options]
