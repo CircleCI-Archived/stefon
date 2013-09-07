@@ -1,13 +1,15 @@
 (ns stefon.settings
   (:require [clojure.java.io :as io]
-            [stefon.util :refer (dump)]))
+            [me.raynes.fs :as fs]
+            [stefon.util :refer (dump)])
+  (:import [java.io File]))
 
 (defonce ^:dynamic *settings*
   {:asset-roots ["resources/assets"] ; returns first one it finds
-;   :serving-root "public" or "/tmp/stefon"
+   :serving-root "resources/public"
    :mode :development
-   :manifest-file "resources/manifest.json" ;; you dont necesarily want this in the assets dir
-   :precompiles [#".*"]}) ;; TODO: make this work
+   ;; you don't necessarily want this in the assets dir
+   :manifest-file "resources/manifest.json"})
 
 (defmacro with-options [options & body]
   `(binding [*settings* (merge *settings* ~options)]
@@ -16,11 +18,20 @@
 (defn production? []
   (-> *settings* :mode (= :development) not))
 
-(defn serving-root []
-  (cond
-   (:serving-root *settings*) (:serving-root *settings*)
-   (production?) "public"
-   :else "/tmp/stefon"))
+(defonce tmp-dir-path-delay
+  (delay (if-let [^File tmp-dir (fs/temp-dir "stefon")]
+           (.getAbsolutePath tmp-dir)
+           (throw (Exception. "Could not create tmp dir for serving-root.")))))
+
+(defn serving-root
+  "Determine what the serving root of the application should be. In production
+   this is the serving root key of *settings*. In development it creates a
+   tempory directory and uses it."
+  []
+  (if (production?)
+    (:serving-root *settings*)
+    ; It is possible, though unlikely, that creating a tmp dir will fail
+    @tmp-dir-path-delay))
 
 (defn serving-asset-root []
   (str (serving-root) "/assets"))
