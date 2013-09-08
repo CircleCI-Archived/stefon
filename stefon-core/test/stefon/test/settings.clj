@@ -4,6 +4,21 @@
             [stefon.core :as core]
             [clojure.test :refer :all]))
 
+(deftest validate-works
+  (testing "throws an exception when errors are found"
+    (is (thrown-with-msg? Exception #"must be a map"
+                          (binding [settings/*settings* "not a map"]
+                            (settings/validate))))
+    (is (thrown-with-msg? Exception #"server-root"
+                          (settings/with-options {:mode :production
+                                                  :server-root nil}))))
+  (testing "throws no exception with default options (which are valid)"
+    (is (nil? (settings/validate))))
+  (testing "when mode is production precompiles must be set"
+    (is (thrown-with-msg? Exception #"^Options .* are invalid:.*precompiles"
+                          (settings/with-options {:mode :production})))
+    (is (nil? (settings/with-options {:mode :production
+                                      :precompiles []})))))
 
 (deftest disallow-asset-root-without-assets
   (is (thrown? Exception
