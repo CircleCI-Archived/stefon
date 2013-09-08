@@ -49,7 +49,7 @@ ex. (link-to-asset \"javascripts/app.js\") => \"/assets/javascripts/app-12345678
    either loading the data from the cache directory, rendering a new resource and
    returning that, or passing on the request to the previously existing request
    handlers in the pipeline."
-  [app options]
+  [app & [options]]
   (settings/with-options options
     (-> (settings/serving-asset-root) io/file .mkdirs)
     (-> app
