@@ -5,6 +5,7 @@ classes/
 .lein-failures
 .lein-deps-sum
 resources/assets
+resources/manifest.json
 resources/asset-cache
 test/fixtures/asset-cache
 native
