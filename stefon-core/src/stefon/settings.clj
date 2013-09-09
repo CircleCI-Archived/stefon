@@ -33,17 +33,19 @@
       "when in production precompiles must be an sequence of strings "
       "representing paths"]]))
 
+(defn- attempt-predicate
+  "Take a vector containing a predicate and an associated error message
+   returning the message if the predicate is false or if it fails."
+  [[predicate & message]]
+  (when-not (try (predicate *settings*) (catch Exception _ false))
+    (apply str message)))
+
 (defn validate
   "Run validations on *settings* and throw an error when issues are found."
   []
-  (let [errors (reduce (fn [errors [predicate & message]]
-                         (if (try
-                               ((complement predicate) *settings*)
-                               (catch Exception _ true))
-                           (conj errors (apply str message))
-                           errors))
-                       []
-                       validations)]
+  (let [errors (->> validations
+                    (map attempt-predicate)
+                    (remove nil?))]
     (when-not (empty? errors)
       (throw (Exception. (str "Options (" *settings* ") are invalid: "
                               (s/join ", " errors) \.))))))
