@@ -146,9 +146,9 @@ Distributed under the Eclipse Public License, the same as Clojure.
 
 ## Authors
 
-Mostly written by Paul Biggar from [CircleCI](https://circleci.com).
+Mostly written by [Paul Biggar](https://twitter.com/circleci) from [CircleCI](https://circleci.com).
 Based on a fork of [dieter](https://github.com/edgecase/dieter) by John Andrews from EdgeCase.
-With contributions [by many other](https://github.com/circleci/stefon/graphs/contributors)
+With contributions [by many others](https://github.com/circleci/stefon/graphs/contributors).
 
 
 ## Changelog
