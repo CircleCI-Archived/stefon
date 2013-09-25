@@ -44,7 +44,7 @@ Or if you use noir
 + [HamlCoffee](https://github.com/9elements/haml-coffee) (*.js.hamlc)
 - Minifying JS using the Google Closure compiler (*.closure.js - coming soon)
 - Minifying CSS using by removing whitespace (coming soon)
-- Replacing asset references (calls to data-uri, etc) with the relevant information about the asset (.*.ar)
+- Replacing asset references (calls to data-uri, etc) with the relevant information about the asset (*.ref)
 
 #### .stefon files
 
@@ -97,7 +97,7 @@ In order to include links to your assets you may use the link-to-asset function.
 
 ### Precompilation
 
-To precompile files, we need to actually precompile them:
+To use precompilation, we need to actually precompile files:
 
 ```
 lein stefon-precompile
@@ -107,7 +107,7 @@ and then load the precompiled files
 
 ```clojure
 (defn init []
-      (stefon/init stefon-options))
+  (stefon/init stefon-options))
 ```
 
 
@@ -116,7 +116,7 @@ and then load the precompiled files
 The following configuration options are available.
 
 ```clojure
-;; Searched for assets in the order listed. Must have a folder called 'assets'.
+;; Searched for assets in the order listed. Must have a directory called 'assets'.
 :asset-roots ["resources"]
 
 ;; The root for compiled assets, which are written to (serving-root)/assets. In dev mode defaults to "/tmp/stefon")
@@ -126,9 +126,9 @@ The following configuration options are available.
 :mode :development
 
 ;; Where the result of the precompile should be stored. Might be good to keep it out of the web root.
-; manifest-file "manifest.json"
+:manifest-file "manifest.json"
 
-;; When precompiling, the list of files to precompile. Can take regexes, which will attempt to match all files in the asset roots
+;; When precompiling, the list of files to precompile. Can take regexes (coming soon), which will attempt to match all files in the asset roots.
 :precompiles ["./assets/myfile.js.stefon"]
 ```
 
@@ -161,16 +161,18 @@ With contributions [by many other](https://github.com/circleci/stefon/graphs/con
 * dev mode mirrors production mode exactly
 * the timestamp thing is gone
 * Many settings removed, we're down to :asset-roots, :serving-root, :mode, manifest-file and :precompiles
-+ The pipeline is now truly a pipeline, supporting more than one transformation per file
-+ Add data-uri support
+* The pipeline is now truly a pipeline, supporting more than one transformation per file
+* Add data-uri support
+* drop support for lein1, lein2 only
+* use proper tmp dirs
+
+## planned before release
 - allow options to be passed to each compiler
 - support different versions of each language
 - add image compression
 - add more compressors
 - add more languages, esp markdown
 - cdn support (port from circleci)
-- use proper tmp dirs
-- drop support for lein1, lein2 only
 
 ### Version 0.4.0 (released as dieter)
 * Remove support for searching for filenames, because it has very sharp edges
