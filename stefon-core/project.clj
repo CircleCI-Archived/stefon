@@ -8,7 +8,6 @@
                  [org.clojure/core.incubator "0.1.1"]
                  [org.clojure/tools.logging "0.2.3"]
                  [cheshire "4.0.0"]
-                 [me.raynes/fs "1.4.4"]
                  [commons-codec "1.5"]
                  [com.google.javascript/closure-compiler "r1592"]
                  [clj-v8 "0.1.4"]

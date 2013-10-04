@@ -1,8 +1,7 @@
 (ns stefon.settings
   (:require [clojure.java.io :as io]
-            [me.raynes.fs :as fs]
             [clojure.string :as s]
-            [stefon.util :refer (dump)])
+            [stefon.util :refer (dump temp-dir)])
   (:import [java.io File]))
 
 (defonce ^:dynamic *settings*
@@ -59,7 +58,7 @@
   (-> *settings* :mode (= :development) not))
 
 (defonce tmp-dir-path-delay
-  (delay (if-let [^File tmp-dir (fs/temp-dir "stefon")]
+  (delay (if-let [^File tmp-dir (temp-dir "stefon")]
            (.getAbsolutePath tmp-dir)
            (throw (Exception. "Could not create tmp dir for serving-root.")))))
 
