@@ -19,7 +19,7 @@ In develepment mode, it serves files directly, recompiling them on changes.
 
 Add stefon as a dependency in leiningen
 
-    :dependencies [[stefon "0.5.0"]]
+    :dependencies [[circleci/stefon "0.5.0-SNAPSHOT"]]
     :plugins [[lein-stefon-precompile "0.5.0"]]
 
 Insert it into your ring middleware stack
