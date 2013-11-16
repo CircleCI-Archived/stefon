@@ -1,5 +1,5 @@
 (ns stefon.asset
-  (:refer-clojure :exclude [compile])
+  (:refer-clojure :exclude [compile name])
   (:require [clj-time.core :as time]
             [clojure.string :as cstr]
             [clojure.java.io :as io]
