@@ -28,6 +28,7 @@
 
   (testing "production mode"
     (let [opts {:mode :production
+                :precompiles []
                 :asset-roots ["test/fixtures/assets"]}]
 
       (testing "no previous file generated"
@@ -92,6 +93,7 @@
 (deftest caching-and-simple-links-in-production
   (let [app (fn [req] {:status 404})
         opts {:mode :production
+              :precompiles []
               :serving-root "/tmp/stefon"
               :asset-roots ["test/fixtures/assets" "test/fixtures/more_assets/assets"]}
         pipeline (core/asset-pipeline app opts)
