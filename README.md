@@ -21,7 +21,7 @@ Add stefon as a dependency in project.clj
 
     :dependencies [[circleci/stefon "0.5.0-SNAPSHOT"]]
     :plugins [[lein-stefon-precompile "0.5.0"]]
-    :jvm-opts ["-Djna.library.path=target/native/macosx/x86_64:target/native/linux/x86_64:target/native/linux/x86]
+    :jvm-opts ["-Djna.library.path=target/native/macosx/x86_64:target/native/linux/x86_64:target/native/linux/x86"]
              
 Insert it into your ring middleware stack
 
