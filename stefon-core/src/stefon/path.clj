@@ -25,15 +25,18 @@
 
 ;;; A URI represents the part of the URI that we use in stefon. If a whole URI
 ;;; is prototcol://hostname/path, then we use URI to represent just the "path"
-;;; portion. In stefon, all URIs will start with "/assets/", as otherwise they
-;;; won't be handled by stefon.
+;;; portion. In stefon, all URIs will start with an optional uri path root in
+;;; production and "/assets/", as otherwise they won't be handled by stefon.
 
 ;;; A filename represents an actual file on the filesystem. We'll try and keep
 ;;; them as absolute strings names, because relative ones are easy to confuse
 ;;; with other types.
 
-(defn asset-uri? [uri]
-  (re-matches #"^/assets/.*" uri))
+(defn asset-uri?
+  [uri]
+  (-> (str \^ (settings/uri-root \/) "/assets/.*")
+      (re-pattern)
+      (re-matches uri)))
 
 (defn split-digested-path [path]
   "return [match path digest extenstion], or nil"
@@ -74,11 +77,12 @@
 (defn uri->adrf [uri]
   {:pre [(asset-uri? uri)]
    :post [(not (asset-uri? %))]}
-  (.substring uri 8))
+  (let [assets-uri-root (str (settings/uri-root \/) "/assets/")]
+    (.substring uri (count assets-uri-root))))
 
 (defn adrf->uri [adrf]
-  {:post [(asset-uri? %)]} ;; uris start with "/assets"
-  (str "/assets/" adrf))
+  {:post [(asset-uri? %)]}
+  (str (settings/uri-root \/) "/assets/" adrf))
 
 (defn adrf->filename [root adrf]
   (str root "/" adrf))
