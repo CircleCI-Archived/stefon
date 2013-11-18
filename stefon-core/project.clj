@@ -14,5 +14,5 @@
                  [clj-v8-native "0.1.4"]
                  [pathetic "0.5.1"]]
   :profiles {:dev {:dependencies [[ring-mock "0.1.4"]
-                                  [org.clojure/clojure "1.5.0"]
+                                  [org.clojure/clojure "1.5.1"]
                                   [bond "0.2.5" :exclusions [org.clojure/clojure]]]}})
