@@ -5,6 +5,7 @@
 
 (defonce ^:dynamic *settings*
   {:asset-roots ["resources/assets"] ; returns first one it finds
+   :generated-assets-root "/assets/"
 ;   :serving-root "public" or "/tmp/stefon"
    :mode :development
    :manifest-file "resources/manifest.json" ;; you dont necesarily want this in the assets dir
@@ -55,6 +56,8 @@
 
 (defn production? []
   (-> *settings* :mode (= :development) not))
+
+(defn generated-assets-root [] (:generated-assets-root *settings*))
 
 (defn serving-root []
   (cond
