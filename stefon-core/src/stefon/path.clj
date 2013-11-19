@@ -21,19 +21,21 @@
 ;;; to the asset directory. It is used as a canonical representation, and can
 ;;; easily by created from URIs and filenames from directory traversals. It can
 ;;; also easily be converted into any of these types of file. It does not
-;;; include the string "/assets/".
+;;; begin with the generated assets root ("/assets/" by default).
 
 ;;; A URI represents the part of the URI that we use in stefon. If a whole URI
 ;;; is prototcol://hostname/path, then we use URI to represent just the "path"
-;;; portion. In stefon, all URIs will start with "/assets/", as otherwise they
-;;; won't be handled by stefon.
+;;; portion. In stefon, all URIs will start with the generated assets root
+;;; ("/assets/" by default), as otherwise they won't be handled by stefon.
 
 ;;; A filename represents an actual file on the filesystem. We'll try and keep
 ;;; them as absolute strings names, because relative ones are easy to confuse
 ;;; with other types.
 
 (defn asset-uri? [uri]
-  (re-matches #"^/assets/.*" uri))
+  (-> (str \^ (settings/generated-assets-root) ".*")
+      (re-pattern)
+      (re-matches uri)))
 
 (defn split-digested-path [path]
   "return [match path digest extenstion], or nil"
@@ -77,8 +79,8 @@
   (.substring uri 8))
 
 (defn adrf->uri [adrf]
-  {:post [(asset-uri? %)]} ;; uris start with "/assets"
-  (str "/assets/" adrf))
+  {:post [(asset-uri? %)]}
+  (str (settings/generated-assets-root) adrf))
 
 (defn adrf->filename [root adrf]
   (str root "/" adrf))
