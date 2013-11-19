@@ -1,7 +1,7 @@
 (ns stefon.settings
-  (:require [clojure.java.io :as io]
-            [clojure.string :as s]
-            [stefon.util :refer (dump)]))
+  (:require [clojure.string :as s]
+            [stefon.util :refer [temp-dir]])
+  (:import [java.io File]))
 
 (defonce ^:dynamic *settings*
   {:asset-roots ["resources/assets"] ; returns first one it finds
@@ -56,11 +56,20 @@
 (defn production? []
   (-> *settings* :mode (= :development) not))
 
-(defn serving-root []
-  (cond
-   (:serving-root *settings*) (:serving-root *settings*)
-   (production?) "public"
-   :else "/tmp/stefon"))
+(defonce tmp-dir-path-delay
+  (delay (if-let [^File tmp-dir (temp-dir "stefon")]
+           (.getAbsolutePath tmp-dir)
+           (throw (Exception. "Could not create tmp dir for serving-root.")))))
+
+(defn serving-root
+  "Determine what the serving root of the application should be. In production
+   this is the serving root key of *settings*. In development it creates a
+   tempory directory and uses it."
+  []
+  (if (production?)
+    (:serving-root *settings*)
+    ; It is possible, though unlikely, that creating a tmp dir will fail
+    @tmp-dir-path-delay))
 
 (defn serving-asset-root []
   (str (serving-root) "/assets"))
