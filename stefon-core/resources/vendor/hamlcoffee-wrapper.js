@@ -10,8 +10,8 @@ function compileHamlCoffee(input, absolute, filename) {
                                     "html5", // format
                                     false, // uglify
                                     true, // basename
-                                    false, // escapeHtml
-                                    false, // escapeAttributes
+                                    true, // escapeHtml
+                                    true, // escapeAttributes
                                     false, // cleanValue
                                     "global", // placement
                                     {}, // dependencies
