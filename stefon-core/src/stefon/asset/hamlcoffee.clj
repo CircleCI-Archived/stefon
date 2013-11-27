@@ -6,7 +6,7 @@
 ;; imported from
 ;; https://raw.github.com/netzpirat/haml-coffee/master/dist/compiler/hamlcoffee.js
 ;; https://raw.github.com/netzpirat/haml_coffee_assets/master/lib/js/haml_coffee_assets.js
-(def compile
+(def processor
   (jsengine/compiler "compileHamlCoffee"
                      ["coffee-script.js"
                       "hamlcoffee.js"
@@ -14,4 +14,4 @@
                       "haml_coffee_assets.js"
                       "hamlcoffee-wrapper.js"]))
 
-(asset/register "hamlc" compile)
+(asset/register "hamlc" processor)
