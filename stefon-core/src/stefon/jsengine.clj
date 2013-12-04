@@ -9,14 +9,14 @@
             [stefon.util :refer (dump)]))
 
 (def memoized (atom {}))
-(defn- memoize-file [filename f]
+(defn- memoize-file [filename f content]
   "Ability to cache precomputed files using timestamps (avoiding the term \"cache\" since it'ss already overloaded here)"
   (let [val (get @memoized filename)
-        current-timestamp (-> filename io/file .lastModified time-coerce/from-long)
-        saved-timestamp (:timestamp val)
+        current-digest (-> content digest/digest)
+        saved-digest (:digest val)
         saved-content (:content val)]
     (if (and saved-content
-             (time/before? current-timestamp saved-timestamp))
+             (= current-digest saved-digest))
 
       ;; return already memory
       saved-content
@@ -25,7 +25,7 @@
       (let [new-content (f)]
         (dosync
          (swap! memoized assoc filename {:content new-content
-                                         :timestamp (time/now)}))
+                                         :digest current-digest}))
         new-content))))
 
 ;; TODO: take an asset to avoid slurping here
@@ -54,5 +54,5 @@
       (let [abs (.getCanonicalPath (io/file root adrf))
             f #(run-compiler pool preloads fn-name abs content)]
         (if (and memoize (memoizable? adrf))
-          (memoize-file abs f)
+          (memoize-file abs f content)
           (f))))))
