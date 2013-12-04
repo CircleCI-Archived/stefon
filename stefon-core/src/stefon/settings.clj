@@ -80,6 +80,9 @@
 (defn precompiles []
   (:precompiles *settings*))
 
+(defn hamlcoffee-options []
+  (:hamlcoffee-options *settings*))
+
 (defn asset-roots []
   (let [result  (:asset-roots *settings*)]
     (doseq [root result]

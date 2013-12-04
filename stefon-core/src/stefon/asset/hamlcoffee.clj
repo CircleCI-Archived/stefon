@@ -1,7 +1,8 @@
 (ns stefon.asset.hamlcoffee
   (:refer-clojure :exclude [compile])
-  (:require [stefon.jsengine :as jsengine]
-            [stefon.asset :as asset]))
+  (:require [stefon.asset :as asset]
+            [stefon.jsengine :as jsengine]
+            [stefon.settings :as settings]))
 
 ;; imported from
 ;; https://raw.github.com/netzpirat/haml-coffee/master/dist/compiler/hamlcoffee.js
@@ -12,6 +13,7 @@
                       "hamlcoffee.js"
                       "haml_coffee_assets-rhino-fix.js"
                       "haml_coffee_assets.js"
-                      "hamlcoffee-wrapper.js"]))
+                      "hamlcoffee-wrapper.js"]
+                     :options (settings/hamlcoffee-options)))
 
 (asset/register "hamlc" compile)
