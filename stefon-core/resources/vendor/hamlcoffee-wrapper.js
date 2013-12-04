@@ -35,7 +35,7 @@ function compileHamlCoffee(input, absolute, filename, option_overrides) {
     extendScope: false
   };
 
-  if (typeof a !== "undefined" && a !== null) {
+  if (typeof option_overrides !== "undefined" && option_overrides !== null) {
     _ref = JSON.parse(option_overrides);
     for (k in _ref) {
       if (!__hasProp.call(_ref, k)) continue;
