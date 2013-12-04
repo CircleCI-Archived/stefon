@@ -1,6 +1,7 @@
 (ns stefon.jsengine
   (:require [clj-time.core :as time]
             [clj-time.coerce :as time-coerce]
+            cheshire.core
             [clojure.java.io :as io]
             [stefon.settings :as settings]
             [stefon.digest :as digest]
@@ -29,13 +30,14 @@
         new-content))))
 
 ;; TODO: take an asset to avoid slurping here
-(defn- run-compiler [pool preloads fn-name filename content]
+(defn- run-compiler [pool preloads fn-name filename content options]
   (try
     (let [file (io/file filename)
           content (digest/->str content)
-          absolute (.getAbsolutePath file)]
+          absolute (.getAbsolutePath file)
+          options (cheshire.core/encode options)]
       (v8/with-scope pool preloads
-        (v8/call fn-name [content absolute filename])))
+        (v8/call fn-name [content absolute filename options])))
     (catch Exception e
       (let [ste (StackTraceElement. "jsengine"
                                     fn-name filename -1)
@@ -48,11 +50,12 @@
 (defn memoizable? [adrf]
   (->> adrf (re-find #"\.ref$") nil?))
 
-(defn compiler [fn-name preloads & {:as args :keys [memoize] :or {memoize true}}]
+(defn compiler [fn-name preloads & {:as args :keys [memoize options]
+                                    :or {memoize true}}]
   (let [pool (pools/make-pool)]
     (fn [root adrf content]
       (let [abs (.getCanonicalPath (io/file root adrf))
-            f #(run-compiler pool preloads fn-name abs content)]
+            f #(run-compiler pool preloads fn-name abs content options)]
         (if (and memoize (memoizable? adrf))
           (memoize-file abs f)
           (f))))))
