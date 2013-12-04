@@ -9,16 +9,18 @@
     (is (thrown-with-msg? Exception #"must be a map"
                           (binding [settings/*settings* "not a map"]
                             (settings/validate))))
-    (is (thrown-with-msg? Exception #"server-root"
+    (is (thrown-with-msg? Exception #"serving-root"
                           (settings/with-options {:mode :production
-                                                  :server-root nil}))))
+                                                  :serving-root nil}))))
   (testing "throws no exception with default options (which are valid)"
     (is (nil? (settings/validate))))
   (testing "when mode is production precompiles must be set"
     (is (thrown-with-msg? Exception #"^Options .* are invalid:.*precompiles"
-                          (settings/with-options {:mode :production})))
+                          (settings/with-options {:mode :production
+                                                  :serving-root "public"})))
     (is (nil? (settings/with-options {:mode :production
-                                      :precompiles []})))))
+                                      :precompiles []
+                                      :serving-root "public"})))))
 
 (deftest disallow-asset-root-without-assets
   (is (thrown? Exception
