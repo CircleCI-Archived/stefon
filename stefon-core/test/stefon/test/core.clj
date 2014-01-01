@@ -29,7 +29,8 @@
   (testing "production mode"
     (let [opts {:mode :production
                 :precompiles []
-                :asset-roots ["test/fixtures/assets"]}]
+                :asset-roots ["test/fixtures/assets"]
+                :serving-root "public"}]
 
       (testing "no previous file generated"
         (is (path/digest-path? (core/link-to-asset "javascripts/app.js" opts))))
