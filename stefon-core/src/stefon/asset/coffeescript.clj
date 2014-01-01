@@ -3,8 +3,8 @@
   (:require [stefon.jsengine :as jsengine]
             [stefon.asset :as asset]))
 
-(def compile (jsengine/compiler "compileCoffeeScript"
+(def processor (jsengine/compiler "compileCoffeeScript"
                                 ["coffee-script.js" "coffee-wrapper.js"]))
 
-(asset/register "cs" compile)
-(asset/register "coffee" compile)
+(asset/register "cs" processor)
+(asset/register "coffee" processor)
