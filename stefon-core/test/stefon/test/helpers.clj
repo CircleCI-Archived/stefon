@@ -29,12 +29,11 @@
   ([text expected times]
      (= times (count (re-seq (re-pattern expected) text)))))
 
-
 (defn asset [undigested {:as opts :keys [mode]}]
   (let [app (fn [req] (throw (Exception. "should never be reached")))
         digested (if (= mode :production)
                    (-> opts precompile/precompile first)
-                   (core/link-to-asset undigested opts))
+                   (settings/with-options opts (core/link-to-asset undigested)))
         pipeline (core/asset-pipeline app opts)]
     (pipeline (request/request :get digested))))
 

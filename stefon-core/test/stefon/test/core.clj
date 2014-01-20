@@ -13,10 +13,10 @@
 
 (deftest test-link-to-asset
   (testing "development mode"
-    (let [opts {:mode :development :asset-roots ["test/fixtures/assets"]}]
-      (is (thrown? java.io.FileNotFoundException (core/link-to-asset "javascripts/dontfindme.js" opts)))
-      (is (= "/assets/javascripts/app-895a9f207aea908554d644c9bd160d5f.js" (core/link-to-asset "javascripts/app.js" opts)))
-      (is (= "/assets/javascripts/stefon-e4e2f0c89cbafc0ee96ea6e355f8ec4f.js" (core/link-to-asset "javascripts/stefon.js.stefon" opts)))
+    (settings/with-options {:mode :development :asset-roots ["test/fixtures/assets"]}
+      (is (thrown? java.io.FileNotFoundException (core/link-to-asset "javascripts/dontfindme.js")))
+      (is (= "/assets/javascripts/app-895a9f207aea908554d644c9bd160d5f.js" (core/link-to-asset "javascripts/app.js")))
+      (is (= "/assets/javascripts/stefon-e4e2f0c89cbafc0ee96ea6e355f8ec4f.js" (core/link-to-asset "javascripts/stefon.js.stefon")))
 
       (testing "file previously generated"
         (manifest/clear!)
@@ -24,16 +24,16 @@
                        "/assets/javascripts/app-12345678901234567890af1234567890.js")
 
         (is (= "/assets/javascripts/app-895a9f207aea908554d644c9bd160d5f.js"
-               (core/link-to-asset "javascripts/app.js" opts))))))
+               (core/link-to-asset "javascripts/app.js"))))))
 
   (testing "production mode"
-    (let [opts {:mode :production
-                :precompiles []
-                :asset-roots ["test/fixtures/assets"]
-                :serving-root "public"}]
+    (settings/with-options {:mode :production
+                            :precompiles []
+                            :asset-roots ["test/fixtures/assets"]
+                            :serving-root "public"}
 
       (testing "no previous file generated"
-        (is (path/digest-path? (core/link-to-asset "javascripts/app.js" opts))))
+        (is (path/digest-path? (core/link-to-asset "javascripts/app.js"))))
 
       (testing "file previously generated"
         (manifest/clear!)
@@ -41,20 +41,21 @@
                        "/assets/javascripts/app-12345678901234567890af1234567890.js")
 
         (is (= "/assets/javascripts/app-12345678901234567890af1234567890.js"
-               (core/link-to-asset "javascripts/app.js" opts)))))))
+               (core/link-to-asset "javascripts/app.js")))))))
 
 
 (deftest test-core-link-to-asset-in-secondary-dir
   (testing "development mode"
-    (let [opts {:mode :development
-                :asset-roots ["test/fixtures/assets" "test/fixtures/more_assets/assets"]}]
-      (is (thrown? Exception (core/link-to-asset "javascripts/dontfindme.js" opts)))
+    (settings/with-options {:mode :development
+                            :asset-roots ["test/fixtures/assets"
+                                          "test/fixtures/more_assets/assets"]}
+      (is (thrown? Exception (core/link-to-asset "javascripts/dontfindme.js")))
       (is (= "/assets/javascripts/app-895a9f207aea908554d644c9bd160d5f.js"
-             (core/link-to-asset "javascripts/app.js" opts)))
+             (core/link-to-asset "javascripts/app.js")))
       (is (= "/assets/images/Elsa-445866c6257dfd01886f4d7968181f14.jpg"
-             (core/link-to-asset "images/Elsa.jpg" opts)))
+             (core/link-to-asset "images/Elsa.jpg")))
       (is (= "/assets/javascripts/stefon-e4e2f0c89cbafc0ee96ea6e355f8ec4f.js"
-             (core/link-to-asset "javascripts/stefon.js.stefon" opts))))))
+             (core/link-to-asset "javascripts/stefon.js.stefon"))))))
 
 (deftest test-asset-builder
   (settings/with-options {:asset-roots ["test/fixtures/assets"]}
@@ -83,10 +84,14 @@
     (testing "simple links redirect without caching"
       (let [resp (resp adrf)]
         (is (= 302 (:status resp)))
-        (is (= (core/link-to-asset adrf opts) (-> resp :headers (get "Location"))))
+        (is (= (settings/with-options opts
+                 (core/link-to-asset adrf))
+               (-> resp :headers (get "Location"))))
         (is (not (-> resp :headers (get "Expires"))))))
     (testing "digest links work and cached"
-      (let [resp (-> (request :get (core/link-to-asset adrf opts)) pipeline)]
+      (let [resp (-> (request :get (settings/with-options opts
+                                     (core/link-to-asset adrf)))
+                     pipeline)]
         (is (= 200 (:status resp)))
         (is (-> resp :body))
         (is (-> resp :headers (get "Expires")))))))
