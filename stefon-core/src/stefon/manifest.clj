@@ -3,6 +3,7 @@
   (:require [stefon.settings :as settings]
             [stefon.path :as path]
             [stefon.util :refer (dump)]
+            [clojure.java.io :as io]
             [cheshire.core :as json]))
 
 (defonce mapping (atom {}))
@@ -25,9 +26,14 @@
   (-> @mapping
       (json/generate-string {:pretty true})))
 
-(defn save! []
-  (spit (settings/manifest-file) (save-string)))
-
+(defn save!
+  "Write the current mapping to the manifest file, creating the directory
+  structure if necessary."
+  []
+  (let [manifest-file (io/file (settings/manifest-file))
+        parent-dir (.getParentFile manifest-file)]
+    (when parent-dir (.mkdirs parent-dir))
+    (spit manifest-file (save-string))))
 
 (defn load-map! [map]
   (swap! mapping (constantly map)))
