@@ -5,7 +5,6 @@
             [clojure.java.io :as io]
             [clojure.tools.logging :refer (infof)]
             [stefon.settings :as settings]
-            [stefon.jsengine :as jsengine]
             [stefon.manifest :as manifest]
             [stefon.util :refer (dump)]
             [stefon.path :as path])
