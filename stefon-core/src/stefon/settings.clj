@@ -71,6 +71,16 @@
     ; It is possible, though unlikely, that creating a tmp dir will fail
     @tmp-dir-path-delay))
 
+(defn uri-root
+  "Determine what the uri-root should be based on the uri-root option in
+  settings. The uri-root option should not contain any leading or trailing
+  slashes."
+  [& [prefix suffix]]
+  (when (production?)
+    (let [uri-root-str (:uri-root *settings*)]
+      (when-not (empty? uri-root-str)
+        (str prefix uri-root-str suffix)))))
+
 (defn serving-asset-root []
   (str (serving-root) "/assets"))
 
