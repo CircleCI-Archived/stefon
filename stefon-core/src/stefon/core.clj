@@ -20,26 +20,35 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-(defn link-to-asset [adrf options]
+(defn link-to-asset [adrf]
   "path should start under assets and not contain a leading slash
 ex. (link-to-asset \"javascripts/app.js\") => \"/assets/javascripts/app-12345678901234567890123456789012.js\""
-  (settings/with-options options
-    (if (settings/production?)
-      (manifest/fetch adrf)
-      (-> adrf asset/find-and-compile-and-save first))))
+  (if (settings/production?)
+    (manifest/fetch adrf)
+    (-> adrf asset/find-and-compile-and-save first)))
 
 (defn wrap-undigested-link
-  [app production? options]
+  [app production?]
   (fn [req]
     (if (or production?
             (-> req :uri path/asset-uri? not))
       (app req)
       (try
         (let [adrf (-> req :uri path/uri->adrf)
-              link (link-to-asset adrf options)]
+              link (link-to-asset adrf)]
           (response/redirect link))
         (catch java.io.FileNotFoundException e
           (app req))))))
+
+(defn wrap-options
+  "A ring middleware which wraps each request in stefon options.
+
+  This is to ensure that the settings passed in to asset-pipeline are available
+  to each request since dynamic vars, like *settings*, are thread local."
+  [app options]
+  (fn [req]
+    (settings/with-options options
+      (app req))))
 
 (defn asset-pipeline
   "Construct the Stefon asset pipeline depending on the :cache-mode option, eventually
@@ -50,7 +59,8 @@ ex. (link-to-asset \"javascripts/app.js\") => \"/assets/javascripts/app-12345678
   (settings/with-options options
     (-> (settings/serving-asset-root) io/file .mkdirs)
     (-> app
-        (wrap-undigested-link (settings/production?) options)
+        (wrap-undigested-link (settings/production?))
+        (wrap-options options)
         (wrap-file (settings/serving-root))
         (wrap-file-expires-never (settings/serving-root)))))
 
